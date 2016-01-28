@@ -33,40 +33,55 @@
 // called default constructor). For App objects they will be executed as if they
 // were placed in the main method in Java.
 
+
 object Exercises extends App {
 
   // Exercise 3
 
   // A few tests, uncomment when your implementation is ready.
 
-  // assert (power (2.0, 2) == 4.0)
-  // assert (power (1.0, 42) == 1.0)
+  assert (power (2.0, 2) == 4.0)
+  assert (power (1.0, 42) == 1.0)
   //
   // The above assertions should pass when you call "scala Exercises".
   //
   // The following one should fail. Uncomment to check that assert works as
   // expected:
   //
-  // assert (power (1.0, 42) == 2.0)
+  //assert (power (1.0, 42) == 2.0)
 
   // add 2-3 more tests:
   //
   // ...
+  assert (power (10000, 0) == 1)
+  assert (power (-10,2) == 100)
 
   // Exercise 4
-
   def fib (n: Int) : Int = {
-    n match {
-      case 0 => 0
-      case 1 => 1
-      case _ => fib(n-1) + fib(n-2)
+    @annotation.tailrec
+    def fibInner(p: Int, current: Int, n: Int): Int = {
+      if (n == 0) current
+      else fibInner(n, p + current, n - 1)
     }
   }
 
   // some tests (uncomment, add more):
 
-  assert (fib(1) == 1)
-  // ...
+  assert (fib(1) == 0)
+
+  //none of the recursive calls are in the tail position, each time,
+  //either the multiplier or the divider is in the tail position
+  def power (x: Double, n: Int) : Double = {
+    n match {
+      case 0 => 1
+      case n if (n > 0 && n % 2 == 0) => power(x,n/2) * power(x,n/2)
+      case n if (n > 0 && n % 2 == 1) => x * power(x, n-1)
+      case n if n < 0 => 1/power(x, -n)
+    }
+  }
+
+  //
+
 
   // Exercise 5
 
@@ -125,31 +140,37 @@ object Exercises extends App {
   // add two tests with another type, for example an Array[String]
 
   // Exercise 7: a curried version of solution to exercise 3
-
-  // def power1(x: Double) (n: Int) :Double = ...
+  def power1 (x: Double)(n: Int): Double =  {
+    n match {
+      case 0 => 1
+      case n if (n > 0 && n % 2 == 0) => (power1(x)(n/2)) * (power1(x)(n/2))
+      case n if (n > 0 && n % 2 == 1) => x * power1(x)(n-1)
+      case n if n < 0 => 1/power1(x)(-n)
+    }
+  }
 
   // Exercise 8
 
-   def curry[A,B,C] (f: (A,B)=>C) : A => (B => C) = {
-     (a:A) => (b:B) => f(a, b)
-   }
+  def curry[A,B,C] (f: (A,B)=>C) : A => (B => C) = {
+    (a: A) => ((b: B) => f(a, b))
+  }
 
   // test if it type checks by currying power automatically:
-
   val power_curried: Double => Int => Double = {
     curry(power)
   }
 
+  //
+  // test if it type checks by currying power automatically:
+  assert(power_curried(10)(2) == 100)
+
   // Exercise 9
-
   def uncurry[A,B,C] (f: A => B => C) : (A,B) => C = {
-    (a:A, b:B) => f(a)(b)
+    (a: A,b: B) => f(a)(b)
   }
-
-  // val power_uncurried: (Double,Int) => Double =
-
+  val power_uncurried: (Double,Int) => Double = uncurry(power_curried)
+  assert(power_uncurried(10,2) == 100)
   // Exercise 10
 
   // def compose[A,B,C] (f: B => C, g: A => B) : A => C = ...
-
 }
