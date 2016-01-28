@@ -68,7 +68,7 @@ object Exercises extends App {
 
   // some tests (uncomment, add more):
 
-  assert (fib(6) == 5)
+  //assert (fib(6) == 5)
 
   //none of the recursive calls are in the tail position, each time,
   //either the multiplier or the divider is in the tail position
@@ -153,7 +153,7 @@ object Exercises extends App {
   // Exercise 8
 
   def curry[A,B,C] (f: (A,B)=>C) : A => (B => C) = {
-    (a: A) => ((b: B) => f(a, b))
+    a => (b => f(a, b))
   }
 
   // test if it type checks by currying power automatically:
@@ -167,17 +167,19 @@ object Exercises extends App {
 
   // Exercise 9
   def uncurry[A,B,C] (f: A => B => C) : (A,B) => C = {
-    (a: A,b: B) => f(a)(b)
+    (a,b) => f(a)(b)
   }
   val power_uncurried: (Double,Int) => Double = uncurry(power_curried)
   assert(power_uncurried(10,2) == 100)
   // Exercise 10
 
   def compose[A,B,C] (f: B => C, g: A => B) : A => C = {
-    (a:A) => f(g(a))
-    //f compose g
+    a => f(g(a))
   }
 
-  
+  def f1(i: Int) = i + 1
+  def f2(i: Int) = i * 2
 
+  def composition = compose(f1, f2)
+  assert(composition(5) == 11)
 }
