@@ -63,11 +63,12 @@ object Exercises extends App {
       if (n == 0) current
       else fibInner(n, p + current, n - 1)
     }
+    fibInner(n, 1, n-1)
   }
 
   // some tests (uncomment, add more):
 
-  assert (fib(1) == 0)
+  assert (fib(6) == 5)
 
   //none of the recursive calls are in the tail position, each time,
   //either the multiplier or the divider is in the tail position
@@ -172,5 +173,11 @@ object Exercises extends App {
   assert(power_uncurried(10,2) == 100)
   // Exercise 10
 
-  // def compose[A,B,C] (f: B => C, g: A => B) : A => C = ...
+  def compose[A,B,C] (f: B => C, g: A => B) : A => C = {
+    (a:A) => f(g(a))
+    //f compose g
+  }
+
+  
+
 }
