@@ -58,17 +58,21 @@ object Exercises extends App {
 
   // Exercise 4
   def fib (n: Int) : Int = {
+
+
     @annotation.tailrec
     def fibInner(p: Int, current: Int, n: Int): Int = {
       if (n == 0) current
-      else fibInner(n, p + current, n - 1)
+      else fibInner(current, p + current, n - 1)
     }
-    fibInner(n, 1, n-1)
+
+    if (n > 1) fibInner(0, 1, n - 2)
+    else 0
   }
 
   // some tests (uncomment, add more):
-
-  //assert (fib(6) == 5)
+  assert (fib(6) == 5)
+  assert (fib(1) == 0)
 
   //none of the recursive calls are in the tail position, each time,
   //either the multiplier or the divider is in the tail position
@@ -127,7 +131,6 @@ object Exercises extends App {
 
 
   // Exercise 6
-
   def isSorted[A] (as: Array[A], ordered: (A,A) =>  Boolean) :Boolean = {
     @annotation.tailrec
     def is(ar: Array[A], r:Boolean): Boolean = {
@@ -145,6 +148,7 @@ object Exercises extends App {
    assert ( isSorted (Array(1,2,3,4,5,6), (a: Int, b: Int)=> a <= b))
    assert (!isSorted (Array(6,2,3,4,5,6), (a: Int, b: Int)=> a <= b))
    assert (!isSorted (Array(1,2,3,4,5,1), (a: Int, b: Int)=> a <= b))
+
 
   // add two tests with another type, for example an Array[String]
 
