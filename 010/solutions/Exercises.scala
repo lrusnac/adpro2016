@@ -128,15 +128,23 @@ object Exercises extends App {
 
   // Exercise 6
 
-//  def isSorted[A] (as: Array[A], ordered: (A,A) =>  Boolean) :Boolean = {
-//
-//  }
+  def isSorted[A] (as: Array[A], ordered: (A,A) =>  Boolean) :Boolean = {
+    @annotation.tailrec
+    def is(ar: Array[A], r:Boolean): Boolean = {
+      if (ar.length < 2) {
+        r
+      } else {
+        is(ar.tail, r && ordered(ar.head, ar.tail.head))
+      }
+    }
+    is(as, true)
+  }
 
   // some tests (uncomment)
 
-  // assert ( isSorted (Array(1,2,3,4,5,6), (a: Int, b: Int)=> a <= b))
-  // assert (!isSorted (Array(6,2,3,4,5,6), (a: Int, b: Int)=> a <= b))
-  // assert (!isSorted (Array(1,2,3,4,5,1), (a: Int, b: Int)=> a <= b))
+   assert ( isSorted (Array(1,2,3,4,5,6), (a: Int, b: Int)=> a <= b))
+   assert (!isSorted (Array(6,2,3,4,5,6), (a: Int, b: Int)=> a <= b))
+   assert (!isSorted (Array(1,2,3,4,5,1), (a: Int, b: Int)=> a <= b))
 
   // add two tests with another type, for example an Array[String]
 
