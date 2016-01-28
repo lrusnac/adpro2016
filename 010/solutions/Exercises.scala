@@ -37,11 +37,9 @@
 object Exercises extends App {
 
   // Exercise 3
-
   // A few tests, uncomment when your implementation is ready.
-
-  assert (power (2.0, 2) == 4.0)
-  assert (power (1.0, 42) == 1.0)
+  assert(power(2.0, 2) == 4.0)
+  assert(power(1.0, 42) == 1.0)
   //
   // The above assertions should pass when you call "scala Exercises".
   //
@@ -49,17 +47,14 @@ object Exercises extends App {
   // expected:
   //
   //assert (power (1.0, 42) == 2.0)
-
   // add 2-3 more tests:
   //
   // ...
-  assert (power (10000, 0) == 1)
-  assert (power (-10,2) == 100)
+  assert(power(10000, 0) == 1)
+  assert(power(-10, 2) == 100)
 
   // Exercise 4
-  def fib (n: Int) : Int = {
-
-
+  def fib(n: Int): Int = {
     @annotation.tailrec
     def fibInner(p: Int, current: Int, n: Int): Int = {
       if (n == 0) current
@@ -71,46 +66,41 @@ object Exercises extends App {
   }
 
   // some tests (uncomment, add more):
-  assert (fib(6) == 5)
-  assert (fib(1) == 0)
+  assert(fib(6) == 5)
+  assert(fib(1) == 0)
 
   //none of the recursive calls are in the tail position, each time,
   //either the multiplier or the divider is in the tail position
-  def power (x: Double, n: Int) : Double = {
+  def power(x: Double, n: Int): Double = {
     n match {
       case 0 => 1
-      case n if (n > 0 && n % 2 == 0) => power(x,n/2) * power(x,n/2)
-      case n if (n > 0 && n % 2 == 1) => x * power(x, n-1)
-      case n if n < 0 => 1/power(x, -n)
+      case n if (n > 0 && n % 2 == 0) => power(x, n / 2) * power(x, n / 2)
+      case n if (n > 0 && n % 2 == 1) => x * power(x, n - 1)
+      case n if n < 0 => 1 / power(x, -n)
     }
   }
 
-  //
-
-
   // Exercise 5
-
   // A simple object describing a cost line; implemented imperatively, Java
   // style (this way until we learn more Scala)
   class Expense {
 
     // A constructor definition
-    def this (tag :String, price :Int) = {
+    def this(tag: String, price: Int) = {
       this()
       this.tag = tag
       this.price = price
     }
 
-    var tag   :String = "" // a tag line in the accounting system
-    var price :Int    = 0 // the price is in cents
+    var tag: String = ""
+    // a tag line in the accounting system
+    var price: Int = 0 // the price is in cents
   }
 
   // computes the total of expenses in cents
-
-
-  def total (expenses: Array[Expense]) :Int = {
+  def total(expenses: Array[Expense]): Int = {
     @annotation.tailrec
-    def t(expenses: Array[Expense], r:Int): Int = {
+    def t(expenses: Array[Expense], r: Int): Int = {
       if (expenses.length == 0) {
         r
       } else {
@@ -122,18 +112,17 @@ object Exercises extends App {
 
   val testcase1 = Array[Expense](
     new Expense("Coffee", 450),
-    new Expense("Cake", 350) )
+    new Expense("Cake", 350))
 
-  assert (total (testcase1) == 800) // uncomment
+  assert(total(testcase1) == 800)
 
+  // uncomment
   // Add one or two more tests
   // ...
-
-
   // Exercise 6
-  def isSorted[A] (as: Array[A], ordered: (A,A) =>  Boolean) :Boolean = {
+  def isSorted[A](as: Array[A], ordered: (A, A) => Boolean): Boolean = {
     @annotation.tailrec
-    def is(ar: Array[A], r:Boolean): Boolean = {
+    def is(ar: Array[A], r: Boolean): Boolean = {
       if (ar.length < 2) {
         r
       } else {
@@ -142,29 +131,24 @@ object Exercises extends App {
     }
     is(as, true)
   }
-
   // some tests (uncomment)
-
-   assert ( isSorted (Array(1,2,3,4,5,6), (a: Int, b: Int)=> a <= b))
-   assert (!isSorted (Array(6,2,3,4,5,6), (a: Int, b: Int)=> a <= b))
-   assert (!isSorted (Array(1,2,3,4,5,1), (a: Int, b: Int)=> a <= b))
-
-
+  assert(isSorted(Array(1, 2, 3, 4, 5, 6), (a: Int, b: Int) => a <= b))
+  assert(!isSorted(Array(6, 2, 3, 4, 5, 6), (a: Int, b: Int) => a <= b))
+  assert(!isSorted(Array(1, 2, 3, 4, 5, 1), (a: Int, b: Int) => a <= b))
   // add two tests with another type, for example an Array[String]
 
   // Exercise 7: a curried version of solution to exercise 3
-  def power1 (x: Double)(n: Int): Double =  {
+  def power1(x: Double)(n: Int): Double = {
     n match {
       case 0 => 1
-      case n if (n > 0 && n % 2 == 0) => (power1(x)(n/2)) * (power1(x)(n/2))
-      case n if (n > 0 && n % 2 == 1) => x * power1(x)(n-1)
-      case n if n < 0 => 1/power1(x)(-n)
+      case n if (n > 0 && n % 2 == 0) => (power1(x)(n / 2)) * (power1(x)(n / 2))
+      case n if (n > 0 && n % 2 == 1) => x * power1(x)(n - 1)
+      case n if n < 0 => 1 / power1(x)(-n)
     }
   }
 
   // Exercise 8
-
-  def curry[A,B,C] (f: (A,B)=>C) : A => (B => C) = {
+  def curry[A, B, C](f: (A, B) => C): A => (B => C) = {
     a => (b => f(a, b))
   }
 
@@ -173,25 +157,24 @@ object Exercises extends App {
     curry(power)
   }
 
-  //
   // test if it type checks by currying power automatically:
   assert(power_curried(10)(2) == 100)
 
   // Exercise 9
-  def uncurry[A,B,C] (f: A => B => C) : (A,B) => C = {
-    (a,b) => f(a)(b)
+  def uncurry[A, B, C](f: A => B => C): (A, B) => C = {
+    (a, b) => f(a)(b)
   }
-  val power_uncurried: (Double,Int) => Double = uncurry(power_curried)
-  assert(power_uncurried(10,2) == 100)
-  // Exercise 10
 
-  def compose[A,B,C] (f: B => C, g: A => B) : A => C = {
+  val power_uncurried: (Double, Int) => Double = uncurry(power_curried)
+  assert(power_uncurried(10, 2) == 100)
+
+  // Exercise 10
+  def compose[A, B, C](f: B => C, g: A => B): A => C = {
     a => f(g(a))
   }
 
   def f1(i: Int) = i + 1
   def f2(i: Int) = i * 2
-
   def composition = compose(f1, f2)
   assert(composition(5) == 11)
 }
