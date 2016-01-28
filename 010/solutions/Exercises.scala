@@ -55,11 +55,17 @@ object Exercises extends App {
 
   // Exercise 4
 
-  // def fib (n: Int) : Int = ...
+  def fib (n: Int) : Int = {
+    n match {
+      case 0 => 0
+      case 1 => 1
+      case _ => fib(n-1) + fib(n-2)
+    }
+  }
 
   // some tests (uncomment, add more):
 
-  // assert (fib (1) == 0)
+  assert (fib(1) == 1)
   // ...
 
   // Exercise 5
@@ -81,13 +87,24 @@ object Exercises extends App {
 
   // computes the total of expenses in cents
 
-  // def total (expenses: Array[Expense]) :Int = ...
+
+  def total (expenses: Array[Expense]) :Int = {
+    @annotation.tailrec
+    def t(expenses: Array[Expense], r:Int): Int = {
+      if (expenses.length == 0) {
+        r
+      } else {
+        t(expenses.tail, r + expenses.head.price)
+      }
+    }
+    t(expenses, 0)
+  }
 
   val testcase1 = Array[Expense](
     new Expense("Coffee", 450),
     new Expense("Cake", 350) )
 
-  // assert (total (testcase1) == 800) // uncomment
+  assert (total (testcase1) == 800) // uncomment
 
   // Add one or two more tests
   // ...
@@ -95,7 +112,9 @@ object Exercises extends App {
 
   // Exercise 6
 
-  // def isSorted[A] (as: Array[A], ordered: (A,A) =>  Boolean) :Boolean = ...
+//  def isSorted[A] (as: Array[A], ordered: (A,A) =>  Boolean) :Boolean = {
+//
+//  }
 
   // some tests (uncomment)
 
@@ -111,15 +130,21 @@ object Exercises extends App {
 
   // Exercise 8
 
-  // def curry[A,B,C] (f: (A,B)=>C) : A => (B => C) = ...
-  //
+   def curry[A,B,C] (f: (A,B)=>C) : A => (B => C) = {
+     (a:A) => (b:B) => f(a, b)
+   }
+
   // test if it type checks by currying power automatically:
 
-  // val power_curried: Double => Int => Double = ...
+  val power_curried: Double => Int => Double = {
+    curry(power)
+  }
 
   // Exercise 9
 
-  // def uncurry[A,B,C] (f: A => B => C) : (A,B) => C =
+  def uncurry[A,B,C] (f: A => B => C) : (A,B) => C = {
+    (a:A, b:B) => f(a)(b)
+  }
 
   // val power_uncurried: (Double,Int) => Double =
 
