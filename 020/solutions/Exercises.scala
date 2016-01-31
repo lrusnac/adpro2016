@@ -39,55 +39,55 @@ case class Cons[+A](head: A, tail: List[A]) extends List[A]
 object List {
 
   // override function application to provide a factory of lists (convenience)
+  // Exercise 1
+  // result will be:
 
   def apply[A](as: A*): List[A] = // Variadic function
     if (as.isEmpty) Nil
     else Cons(as.head, apply(as.tail: _*))
 
   // Exercise 2
-
-  // def tail[A] (as: List[A]) :List[A] = ...
+  def tail[A](as: List[A]): List[A] = as match {
+    case Cons(x, xs) => xs
+    case _ => List()
+  }
 
   // Exercise 3
 
-  // def setHead[A] (as: List[A], newHead: A) : List[A] = ...
-
   // Exercise 4
-
-  // def drop[A] (l: List[A], n: Int) : List[A] = ...
 
   // Exercise 5
 
-  // def dropWhile[A](l: List[A], f: A => Boolean): List[A] = ...
-
   // Exercise 6
-
-  // def init[A](l: List[A]): List[A] = ...
+  def init[A](l: List[A]): List[A] = {
+    l match {
+      case Cons(x, Nil) => Nil
+      case Cons(x, xs) => Cons(x, init(xs))
+      case _ => Nil
+    }
+  }
 
   // Exercise 7 is in the bottom of the file
 
   // Exercise 8
-
-  def foldRight[A,B] (as :List[A], z: B) (f : (A,B)=> B) :B = as match {
-    case Nil => z
-    case Cons (x,xs) => f (x, foldRight (xs,z) (f))
+  def length[A](as: List[A]): Int = {
+    def l(as: List[A], v: Int): Int = as match {
+      case Cons(x, xs) => l(xs, v + 1)
+      case _ => v
+    }
+    l(as, 0)
   }
 
-  // def length[A] (as: List[A]): Int = ...
+  def foldRight[A, B](as: List[A], z: B)(f: (A, B) => B): B = as match {
+    case Nil => z
+    case Cons(x, xs) => f(x, foldRight(xs, z)(f))
+  }
 
   // Exercise 9
 
-  // def foldLeft[A,B] (as: List[A], z: B) (f: (B, A) => B) : B = ...
-
   // Exercise 10
 
-  // def sum (as : List[Int]) : Int = ...
-  // def product (as :List[Int]) : Int = ...
-  // def length1 (as :List[Int]) : Int = ...
-
   // Exercise 11
-
-  // def reverse[A] (as :List[A]) :List[A] = ...
 
   // Exercise 12
 
