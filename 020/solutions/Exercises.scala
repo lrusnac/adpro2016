@@ -39,64 +39,73 @@ case class Cons[+A](head: A, tail: List[A]) extends List[A]
 object List {
 
   // override function application to provide a factory of lists (convenience)
-
   def apply[A](as: A*): List[A] = // Variadic function
     if (as.isEmpty) Nil
     else Cons(as.head, apply(as.tail: _*))
 
   // Exercise 2
-
-  // def tail[A] (as: List[A]) :List[A] = ...
+  def tail[A] (as: List[A]) :List[A] = as match {
+      case Cons(x, xs) => xs
+      case _ => Nil
+  }
 
   // Exercise 3
-
-  // def setHead[A] (as: List[A], newHead: A) : List[A] = ...
+  def setHead[A] (as: List[A], newHead: A) : List[A] = as match {
+    case Cons(x, xs) => Cons(newHead, xs)
+    case _ => Nil
+  }
 
   // Exercise 4
-
-  // def drop[A] (l: List[A], n: Int) : List[A] = ...
+  def drop[A] (l: List[A], n: Int) : List[A] = n match {
+    case n if n > 0 => drop(tail(l), n-1)
+    case _ => l
+  }
 
   // Exercise 5
-
-  // def dropWhile[A](l: List[A], f: A => Boolean): List[A] = ...
+  def dropWhile[A](l: List[A], f: A => Boolean): List[A] = l match {
+    case Cons(x, xs) => {
+      if(f(x)) {
+        dropWhile(xs, f)
+      } else {
+        l
+      }
+    }
+    case _ => Nil
+  }
 
   // Exercise 6
-
   // def init[A](l: List[A]): List[A] = ...
 
   // Exercise 7 is in the bottom of the file
 
   // Exercise 8
+  // def length[A] (as: List[A]): Int = ...
 
+  // Exercise 9
   def foldRight[A,B] (as :List[A], z: B) (f : (A,B)=> B) :B = as match {
     case Nil => z
     case Cons (x,xs) => f (x, foldRight (xs,z) (f))
   }
 
-  // def length[A] (as: List[A]): Int = ...
-
-  // Exercise 9
-
-  // def foldLeft[A,B] (as: List[A], z: B) (f: (B, A) => B) : B = ...
+  def foldLeft[A,B] (as: List[A], z: B) (f: (B, A) => B) : B = as match {
+    case Nil => z
+    case Cons(x, xs) => foldLeft(xs, f(z, x))(f)
+  }
 
   // Exercise 10
-
-  // def sum (as : List[Int]) : Int = ...
-  // def product (as :List[Int]) : Int = ...
-  // def length1 (as :List[Int]) : Int = ...
+  def sum (as : List[Int]) : Int = foldLeft(as, 0)(_+_)
+  def product (as :List[Int]) : Int = foldLeft(as, 1)(_*_)
+  def length1 (as :List[Int]) : Int = foldLeft(as, 0)((x, y) => x + 1)
 
   // Exercise 11
-
-  // def reverse[A] (as :List[A]) :List[A] = ...
-
+  def reverse[A] (as :List[A]) :List[A] = foldLeft(as, List()[A])((xs, x) => Cons(x, xs))
+  
   // Exercise 12
-
   // def foldRight1[A,B] (as: List[A], z: B) (f: (A, B) => B) : B = ...
 
   // def foldLeft1[A,B] (as: List[A], z: B) (f: (B,A) => B) : B = ...
 
   // Exercise 13
-
   def append[A](a1: List[A], a2: List[A]): List[A] = a1 match {
     case Nil => a2
     case Cons(h,t) => Cons(h, append(t, a2))
