@@ -1,7 +1,7 @@
 // Advanced Programming, Exercises by A. Wąsowski, IT University of Copenhagen
 //
-// AUTHOR1:
-// AUTHOR2:
+// AUTHOR1: Leonid Rusnac leru@itu.dk
+// AUTHOR2: Jens Tuxen Johannessen jenj@itu.dk
 //
 // Write names and ITU email addresses of both group members that contributed to
 // the solution of the exercise (in alphabetical order by family name).
@@ -37,7 +37,6 @@ case class Cons[+A](head: A, tail: List[A]) extends List[A]
 
 
 object List {
-
   // override function application to provide a factory of lists (convenience)
   def apply[A](as: A*): List[A] = // Variadic function
     if (as.isEmpty) Nil
@@ -98,6 +97,7 @@ object List {
     case Nil => z
     case Cons(x, xs) => f(x, foldRight(xs, z)(f))
   }
+
   def foldLeft[A,B] (as: List[A], z: B) (f: (B, A) => B) : B = as match {
     case Nil => z
     case Cons(x, xs) => foldLeft(xs, f(z, x))(f)
@@ -110,6 +110,7 @@ object List {
 
   // Exercise 11
   def reverse[A] (as :List[A]) :List[A] = foldLeft(as, List()[A])((xs, x) => Cons(x, xs))
+
   // Exercise 12
   // def foldRight1[A,B] (as: List[A], z: B) (f: (A, B) => B) : B = ...
 
@@ -124,45 +125,34 @@ object List {
   // def concat[A] (as: List[List[A]]) :List[A] = ..
 
   // Exercise 14
-
   // def map[A,B] (a :List[A]) (f :A => B) :List[B] = ...
 
   // Exercise 15 (no coding)
 
   // Exercise 16
-
   // def filter[A] (as: List[A]) (f: A => Boolean) : List[A] = ...
 
   // Exercise 17
-
   // def flatMap[A,B](as: List[A])(f: A => List[B]) : List[B] = ...
 
   // Exercise 18
-
   // def filter1[A] (l: List[A]) (p: A => Boolean) :List[A] = ...
 
   // Exercise 19
-
   // def add (l: List[Int]) (r: List[Int]): List[Int] = ...
 
   // Exercise 20
-
   // def zipWith[A,B,C] (f : (A,B)=>C) (l: List[A], r: List[B]) : List[C] = ...
 
   // Exercise 21
-
   // def hasSubsequence[A] (sup: List[A], sub: List[A]) :Boolean = ...
 
   // Exercise 22
-
   // def pascal (n :Int) : List[Int] = ...
 
   // a test: pascal (4) = Cons(1,Cons(3,Cons(3,Cons(1,Nil))))
 
 }
-
-
-
 
 // Exercise 7
 
