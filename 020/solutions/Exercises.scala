@@ -153,15 +153,16 @@ object List {
   })
 
   // Exercise 19
-  def add (l: List[Int]) (r: List[Int]): List[Int] = {
-    def internalAdd() =
-    (l, r) match {
-      case (Cons(x, xs), Cons(y, ys)) =>
-    }
+  def add (l: List[Int]) (r: List[Int]): List[Int] = (l, r) match {
+    case (Cons(x, xs), Cons(y, ys)) => Cons(x+y, add(xs)(ys))
+    case (_, _) => List[Int]()
   }
 
   // Exercise 20
-  // def zipWith[A,B,C] (f : (A,B)=>C) (l: List[A], r: List[B]) : List[C] = ...
+  def zipWith[A,B,C] (f : (A,B)=>C) (l: List[A], r: List[B]) : List[C] = (l, r) match {
+    case (Cons(x, xs), Cons(y, ys)) => Cons(f(x,y), zipWith(f)(xs, ys))
+    case (_, _) => List[C]()
+  }
 
   // Exercise 21
   // def hasSubsequence[A] (sup: List[A], sub: List[A]) :Boolean = ...
@@ -186,5 +187,3 @@ object Exercise7 {
     SalaryLine("Bob",40))
 
 }
-
-
