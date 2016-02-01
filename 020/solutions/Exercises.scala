@@ -109,7 +109,7 @@ object List {
   def length1 (as :List[Int]) : Int = foldLeft(as, 0)((x, y) => x + 1)
 
   // Exercise 11
-  def reverse[A] (as :List[A]) :List[A] = foldLeft(as, List()[A])((xs, x) => Cons(x, xs))
+  def reverse[A] (as :List[A]) :List[A] = foldLeft(as, List[A]())((xs, x) => Cons(x, xs))
 
   // Exercise 12
   // def foldRight1[A,B] (as: List[A], z: B) (f: (A, B) => B) : B = ...
@@ -139,10 +139,16 @@ object List {
   // def filter1[A] (l: List[A]) (p: A => Boolean) :List[A] = ...
 
   // Exercise 19
-  // def add (l: List[Int]) (r: List[Int]): List[Int] = ...
+  def add (l: List[Int]) (r: List[Int]): List[Int] = (l, r) match {
+    case (Cons(x, xs), Cons(y, ys)) => Cons(x+y, add(xs)(ys))
+    case (_, _) => List[Int]()
+  }
 
   // Exercise 20
-  // def zipWith[A,B,C] (f : (A,B)=>C) (l: List[A], r: List[B]) : List[C] = ...
+  def zipWith[A,B,C] (f : (A,B)=>C) (l: List[A], r: List[B]) : List[C] = (l, r) match {
+    case (Cons(x, xs), Cons(y, ys)) => Cons(f(x,y), zipWith(f)(xs, ys))
+    case (_, _) => List[C]()
+  }
 
   // Exercise 21
   // def hasSubsequence[A] (sup: List[A], sub: List[A]) :Boolean = ...
@@ -167,5 +173,3 @@ object Exercise7 {
     SalaryLine("Bob",40))
 
 }
-
-
