@@ -109,7 +109,7 @@ object List {
   def length1 (as :List[Int]) : Int = foldLeft(as, 0)((x, y) => x + 1)
 
   // Exercise 11
-  def reverse[A] (as :List[A]) :List[A] = foldLeft(as, List()[A])((xs, x) => Cons(x, xs))
+  def reverse[A] (as :List[A]) :List[A] = foldLeft(as, List[A]())((xs, x) => Cons(x, xs))
 
   // Exercise 12
   // def foldRight1[A,B] (as: List[A], z: B) (f: (A, B) => B) : B = ...
@@ -122,24 +122,43 @@ object List {
     case Cons(h,t) => Cons(h, append(t, a2))
   }
 
-  // def concat[A] (as: List[List[A]]) :List[A] = ..
+  def concat[A](as: List[List[A]]): List[A] = {
+    foldLeft(as, List[A]())((x, xs) => append(x, xs))
+  }
 
   // Exercise 14
-  // def map[A,B] (a :List[A]) (f :A => B) :List[B] = ...
+//  def map[A,B](a: List[A]) (f: A => B): List[B] = a match {
+//    case Cons(x, xs) => Cons(f(x), map(xs)(f))
+//  }
+
+  def map[A,B](a: List[A]) (f: A => B): List[B] = reverse(foldLeft(a, List[B]())((xs, x) => Cons(f(x), xs)))
 
   // Exercise 15 (no coding)
 
   // Exercise 16
-  // def filter[A] (as: List[A]) (f: A => Boolean) : List[A] = ...
+  def filter[A] (as: List[A]) (f: A => Boolean) : List[A] = {
+    reverse(foldLeft(as, List[A]())((xs, x) => {
+      if(f(x)) Cons(x, xs)
+      else xs
+    }))
+  }
 
   // Exercise 17
-  // def flatMap[A,B](as: List[A])(f: A => List[B]) : List[B] = ...
+  def flatMap[A,B](as: List[A])(f: A => List[B]) : List[B] = foldLeft(as, List[B]())((xs, x) => append(xs, f(x)))
 
   // Exercise 18
-  // def filter1[A] (l: List[A]) (p: A => Boolean) :List[A] = ...
+  def filter1[A] (l: List[A]) (p: A => Boolean) :List[A] = flatMap(l)(x=>{
+    if(p(x)) List(x)
+    else List()
+  })
 
   // Exercise 19
-  // def add (l: List[Int]) (r: List[Int]): List[Int] = ...
+  def add (l: List[Int]) (r: List[Int]): List[Int] = {
+    def internalAdd() =
+    (l, r) match {
+      case (Cons(x, xs), Cons(y, ys)) =>
+    }
+  }
 
   // Exercise 20
   // def zipWith[A,B,C] (f : (A,B)=>C) (l: List[A], r: List[B]) : List[C] = ...
