@@ -122,6 +122,7 @@ object List {
     case Cons(h,t) => Cons(h, append(t, a2))
   }
 
+<<<<<<< HEAD
   def concat[A](as: List[List[A]]): List[A] = {
     foldLeft(as, List[A]())((x, xs) => append(x, xs))
   }
@@ -132,11 +133,22 @@ object List {
 //  }
 
   def map[A,B](a: List[A]) (f: A => B): List[B] = reverse(foldLeft(a, List[B]())((xs, x) => Cons(f(x), xs)))
+=======
+  def concat[A] (as: List[List[A]]) :List[A] = {
+    foldLeft(as,List[A]())((a,b) => append(a,b))
+  }
+
+  // Exercise 14
+  def map[A,B] (a :List[A]) (f :A => B) :List[B] = {
+    reverse(foldLeft(a,List[B]())((x,y) => Cons(f(y),x)))
+  }
+>>>>>>> reverse,concat,map,filter,flatmap,filter1,maximumsalary
 
   // Exercise 15 (no coding)
 
   // Exercise 16
   def filter[A] (as: List[A]) (f: A => Boolean) : List[A] = {
+<<<<<<< HEAD
     reverse(foldLeft(as, List[A]())((xs, x) => {
       if(f(x)) Cons(x, xs)
       else xs
@@ -151,6 +163,28 @@ object List {
     if(p(x)) List(x)
     else List()
   })
+=======
+    reverse(foldLeft(as,List[A]())((xs,y) => {
+      if (f(y)) {
+        Cons(y,xs)
+      } else {
+        xs
+      }
+    }))
+
+  // Exercise 17
+  def flatMap[A,B](as: List[A])(f: A => List[B]) : List[B] = {
+    foldLeft(as,List[B]())((xs,x) => append(f(x),xs))
+  }
+
+  // Exercise 18
+  def filter1[A] (l: List[A]) (p: A => Boolean) :List[A] = {
+    flatMap(l)((x) => {
+      if (p(x)) List(x)
+      else List()
+    })
+   }
+>>>>>>> reverse,concat,map,filter,flatmap,filter1,maximumsalary
 
   // Exercise 19
   def add (l: List[Int]) (r: List[Int]): List[Int] = (l, r) match {
@@ -180,7 +214,15 @@ object Exercise7 {
 
   case class SalaryLine(name: String, amount: Integer)
 
-  // def maximumSalary (salaries: List[SalaryLine]) :Integer = ...
+  def maximumSalary (salaries: List[SalaryLine]) :Integer = {
+    def m(saleries: List[SalaryLine], maximum: Integer): Integer = {
+      saleries match {
+        case Nil => maximum
+        case Cons(x,xs) => m(xs,Math.max(x.amount,maximum))
+      }
+    }
+    m(salaries,-1)
+  }
 
   val test_case = List( SalaryLine("John",41),
     SalaryLine("Alice", 42),
