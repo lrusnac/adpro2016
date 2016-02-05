@@ -127,10 +127,6 @@ object List {
   }
 
   // Exercise 14
-//  def map[A,B](a: List[A]) (f: A => B): List[B] = a match {
-//    case Cons(x, xs) => Cons(f(x), map(xs)(f))
-//  }
-
   def map[A,B](a: List[A]) (f: A => B): List[B] = reverse(foldLeft(a, List[B]())((xs, x) => Cons(f(x), xs)))
 
   // Exercise 15 (no coding)
@@ -190,7 +186,15 @@ object Exercise7 {
 
   case class SalaryLine(name: String, amount: Integer)
 
-  // def maximumSalary (salaries: List[SalaryLine]) :Integer = ...
+  def maximumSalary (salaries: List[SalaryLine]) :Integer = {
+    def m(saleries: List[SalaryLine], maximum: Integer): Integer = {
+      saleries match {
+        case Nil => maximum
+        case Cons(x,xs) => m(xs,Math.max(x.amount,maximum))
+      }
+    }
+    m(salaries,-1)
+  }
 
   //val test_case = List(SalaryLine("John",41),SalaryLine("Alice", 42), SalaryLine("Bob",40))
 
