@@ -165,7 +165,17 @@ object List {
   }
 
   // Exercise 21
-  // def hasSubsequence[A] (sup: List[A], sub: List[A]) :Boolean = ...
+  def hasSubsequence[A] (sup: List[A], sub: List[A]) :Boolean = sup match {
+      case Nil => sub == Nil
+      case Cons(x, xs) =>
+          if(hasSubsequenceFromHere(Cons(x, xs), sub) == true) true
+          else hasSubsequence(xs, sub)
+  }
+  def hasSubsequenceFromHere[A] (sup: List[A], sub: List[A]): Boolean = (sup, sub) match {
+      case (Cons(x, xs), Cons(y, ys)) => x == y && hasSubsequenceFromHere(xs, ys)
+      case (_, Nil) => true
+      case (_, _) => false
+  }
 
   // Exercise 22
   // def pascal (n :Int) : List[Int] = ...
@@ -182,8 +192,6 @@ object Exercise7 {
 
   // def maximumSalary (salaries: List[SalaryLine]) :Integer = ...
 
-  val test_case = List( SalaryLine("John",41),
-    SalaryLine("Alice", 42),
-    SalaryLine("Bob",40))
+  //val test_case = List(SalaryLine("John",41),SalaryLine("Alice", 42), SalaryLine("Bob",40))
 
 }
