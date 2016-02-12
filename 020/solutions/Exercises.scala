@@ -116,9 +116,13 @@ object List {
   def reverse[A](as: List[A]): List[A] = foldLeft(as, List[A]())((xs, x) => Cons(x, xs))
 
   // Exercise 12
-  // def foldRight1[A,B] (as: List[A], z: B) (f: (A, B) => B) : B = ...
+  def foldRight1[A,B] (as: List[A], z: B) (f: (A, B) => B) : B = foldLeft(reverse(as),z)((b,a) => f(a,b))
 
-  // def foldLeft1[A,B] (as: List[A], z: B) (f: (B,A) => B) : B = ...
+  
+  def foldLeft1[A,B] (as: List[A], z: B) (f: (B,A) => B) : B = {
+    val reverse = foldRight(as,List[A]())((a,b) => append(b,List(a)))
+    foldRight(reverse,z)((a,b) => f(b,a))
+  }
 
   // Exercise 13
   def append[A](a1: List[A], a2: List[A]): List[A] = a1 match {
