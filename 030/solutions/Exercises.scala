@@ -38,9 +38,14 @@
  * reimplement them in my subclass.  This is not a problem if I mix in a trait
  * construction time. */
 
-trait OrderedPoint extends ... {
+trait OrderedPoint extends java.awt.Point with scala.math.Ordered[java.awt.Point]  {
 
-  override def compare (that :java.awt.Point) :Int =  ...
+  //new java.awt.Point(1,2) with OrderedPoint > new java.awt.Point(3,4) with OrderedPoint
+  override def compare (that :java.awt.Point) :Int = {
+    if (this.getX > that.getX || (this.getX == that.getX) && (this.getY > that.getY)) 1
+    else if (this.getX == that.getX && this.getY == that.getY) 0
+    else -1
+  }
 
 }
 
@@ -51,6 +56,7 @@ case class Leaf[A] (value: A) extends Tree[A]
 case class Branch[A] (left: Tree[A], right: Tree[A]) extends Tree[A]
 
 object Tree {
+
 
   // Exercise 2 (3.25)
 
