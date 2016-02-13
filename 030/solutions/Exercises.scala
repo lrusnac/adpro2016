@@ -1,8 +1,8 @@
 // Advanced Programming, Exercises by A. Wąsowski, IT University of Copenhagen
 //
-// AUTHOR1:
-// AUTHOR2:
-// Group number:
+// AUTHOR1: Leonid Rusnac leru@itu.dk
+// AUTHOR2: Jens Tuxen Johannessen jenj@itu.dk
+// Group number: 19
 //
 // Write names and ITU email addresses of both group members that contributed to
 // the solution of the exercise (in alphabetical order by family name).
