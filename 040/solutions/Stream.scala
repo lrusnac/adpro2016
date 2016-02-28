@@ -59,7 +59,7 @@ sealed trait Stream[+A] {
   //unfold
   //map, take, takeWhile, zipWith, and zipAll
   def mapUnfold[B](f:  A=>B): Stream[B] = unfold(this)(x => x match {
-    case Cons(h,t) => Some(  (f(h()), t()  ) //not sure why t(), i guess t is a function => Stream[A]
+    case Cons(h,t) => Some(  (f(h()), t()  ) ) //not sure why t(), i guess t is a function => Stream[A]
     case _ => None
   })
 
