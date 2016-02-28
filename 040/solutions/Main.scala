@@ -3,11 +3,12 @@
 //
 // A script meant to be loaded into REPL (scala -i Main.scala)
 
-import fpinscala.laziness._
 import fpinscala.laziness.Stream._
+import fpinscala.laziness._
 
 // this is how we do simple interactive testing
-object Tests extends App {
+
+object Main extends App {
 
   val l1: Stream[Int] = Empty
   val l2: Stream[Int] = empty
@@ -18,9 +19,8 @@ object Tests extends App {
   println(l2.headOption)
   println(l3.headOption)
 
-  val naturals: Stream[Int] = Stream.from(0)
 
-  println(l3.toList)
+  val naturals: Stream[Int] = Stream.from(0)
 
   println(Stream.to(10).toList)
 
@@ -30,22 +30,46 @@ object Tests extends App {
 
   println(naturals.forAll (_ < 0))
 
-  // println(naturals.forAll (_ >=0))
+  //keeps evaluating, never to return a value
+  //println(naturals.forAll (_ < 0))
 
-  println(naturals.takeWhileWF(_<1000000000).drop(100).take(50).toList)
-  println(naturals.takeWhileWF(_<1000000000).drop(100).take(50).headOptionWF())
+  println(naturals.takeWhile1(_<1000000000).drop(100).take(50).toList)
 
-  println(naturals.map(_*2).drop(30).take(50).toList)
-  println(naturals.drop(42).filter(_%2 ==0).take(30).toList)
-  naturals.append(naturals)
+  println(naturals.append(naturals))
   println(naturals.take(10).append(naturals).take(20).toList)
 
-  //println(naturals.flatMap(a => Stream.to(a)).take(100).toList)
-  //println(naturals.flatMap (x =>from (x)).take (100).toList)
 
-  val fibs = Stream.fibonaci.take(10).toList
-  println(fibs)
+  println(naturals.map(x => Stream.to(x).toList).take(3).toList)
+  println("flatmap")
+  println(naturals.flatMap(to _).take(100).toList)
+  println("what we want flatmap to append")
+  println(scala.Stream.from(0).flatMap((x) => scala.Stream.from(0).take(x)).take(100).toList)
 
-  println(empty.fibunfold.take(10).toList)
-  println(naturals.mapunfold(_*2).drop(30).take(50).toList)
+  println("unfold")
+  println(Stream.unfold(0)(s => Some(s,s+1)).take(10).toList)
+  println("naturals")
+  println(naturals.take(10).toList)
+
+  println(fibInf.take(10).toList)
+
+  println(naturals.mapUnfold(x=>x).take(100).toList)
+
+  //println(naturals.take1(10).toList)
+  println(naturals.takeUnfold(100).toList)
+
+  println(naturals.takeWhile1(_<1000000000).drop(100).take(50).toList)
+
+  println(naturals.zipWith[Int,Int](_+_)(naturals).take(100).toList)
+  //println(naturals.zipAl
+
+  println(naturals.zipWith[Int,Int] (_+_) (naturals).take(2000000000).take(20).toList)
+
+  println(naturals.take(100000000).startsWith(naturals.take(10)))
+
+  println(naturals.startsWith(fibInf) == false);
+
+
+  println(Stream(1,2,3).tails.map(x => x.toList).toList)
+  println(scala.Stream(1,2,3).tails)
 }
+
