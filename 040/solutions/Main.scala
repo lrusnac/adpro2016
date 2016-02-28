@@ -35,7 +35,7 @@ object Tests extends App {
   println(naturals.takeWhileWF(_<1000000000).drop(100).take(50).toList)
   println(naturals.takeWhileWF(_<1000000000).drop(100).take(50).headOptionWF())
 
-  println(naturals.map(_*2).drop (30).take(50).toList)
+  println(naturals.map(_*2).drop(30).take(50).toList)
   println(naturals.drop(42).filter(_%2 ==0).take(30).toList)
   naturals.append(naturals)
   println(naturals.take(10).append(naturals).take(20).toList)
@@ -47,5 +47,5 @@ object Tests extends App {
   println(fibs)
 
   println(empty.fibunfold.take(10).toList)
-  println(naturals.mapunfold(_*2).drop (30).take(50).toList)
+  println(naturals.mapunfold(_*2).drop(30).take(50).toList)
 }
