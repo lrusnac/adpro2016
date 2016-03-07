@@ -50,7 +50,9 @@ object Main extends App {
   println("naturals")
   println(naturals.take(10).toList)
 
-  println(fibInf.take(10).toList)
+  println(fibRecursive.take(10).toList)
+
+  println(fibAppend.take(10).toList)
 
   println(naturals.mapUnfold(x=>x).take(100).toList)
 
@@ -66,7 +68,7 @@ object Main extends App {
 
   println(naturals.take(100000000).startsWith(naturals.take(10)))
 
-  println(naturals.startsWith(fibInf) == false);
+  println(naturals.startsWith(fibUnfold) == false);
 
 
   println(Stream(1,2,3).tails.map(x => x.toList).toList)

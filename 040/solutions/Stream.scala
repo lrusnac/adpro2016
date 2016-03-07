@@ -157,7 +157,19 @@ object Stream {
 
 
   def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] = f(z).map((x:(A,S)) => cons(x._1,unfold(x._2)(f))).getOrElse(Empty)
-  val fibInf: Stream[Int] = Stream.unfold((0,1))(s => Some((s._2, (s._2,s._1+s._2))))
+
+
+  val fibRecursive: Stream[Int] = {
+    def f(a: Int)(b: Int): Stream[Int] = cons(a+b,f(b)(a+b))
+    cons(0,f(0)(1))
+  }
+
+  val fibAppend = {
+    def fA: (Int,Int) => Stream[Int] = (a:Int,b:Int) => cons(a,empty.append(fA(b,a+b)))
+    fA(0,1)
+  }
+
+  val fibUnfold: Stream[Int] = Stream.unfold((0,1))(s => Some((s._2, (s._2,s._1+s._2))))
 
   //to zero not infinite
   def to (n :Int) :Stream[Int] = {
