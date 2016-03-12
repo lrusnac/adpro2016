@@ -129,8 +129,6 @@ object RNG {
   def _both[A,B](ra: Rand[A], rb: Rand[B]): Rand[(A,B)] = _map2(ra, rb)((_, _))
 }
 
-import State._
-
 case class State[S, +A](run: S => (A, S)) {
 
   // Exercise 10 (6.10)
@@ -206,5 +204,16 @@ object Candy {
 
   // Exercise 13 (CB 6.11)
 
-  // def simulateMachine(inputs: List[Input]): State[Machine, (Int, Int)] = ...
+  def simulateMachine(inputs: List[Input]): State[Machine, (Int, Int)] = State(s => {
+
+    inputs.foldLeft((s.candies,s.coins),s)((b,input) => input match {
+      case Coin => {
+        if (s.locked && s.candies > 0) ((s.candies,s.coins), Machine(true,s.candies,s.coins))
+        //unlocked or no candies, just take the money!
+        else ((s.candies,s.coins+1),Machine(false,s.candies,s.coins+1))
+      }
+      case Turn => if (s.locked) ((s.candies,s.coins), s) else ((s.candies,s.coins),Machine(true,s.candies-1,s.coins+1))
+    })
+  })
+
 }
