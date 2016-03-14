@@ -203,7 +203,7 @@ case class Machine(locked: Boolean, candies: Int, coins: Int)
 object Candy {
 
   // Exercise 13 (CB 6.11)
-
+  // NOT really working right now, we will come back to this later on
   def simulateMachine(inputs: List[Input]): State[Machine, (Int, Int)] = State(s => {
 
     inputs.foldLeft((s.candies,s.coins),s)((b,input) => input match {
