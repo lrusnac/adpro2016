@@ -30,7 +30,7 @@ package adpro
 import fpinscala.state._
 
 
-object Exercise1 extends App { // this line not needed in REPL
+object Exercise1 { // this line not needed in REPL
 
   // RNG is the type of (R)andom (N)umber (G)enerators.  Its companion object
   // (also called RNG) has a factory called "Simple" that allows creating a
