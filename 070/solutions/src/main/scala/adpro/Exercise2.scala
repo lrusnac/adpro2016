@@ -19,9 +19,9 @@ object Exercise85_TestCases {
 
   // uncomment once functions are implemented
   //
-  // val r1 = Gen.unit(3.14).toStream(42).take(5).toList
-  // val r2 = Gen.boolean.toStream(42).take(5).toList
-  // val r3 = Gen.boolean.listOfN(3).toStream(42).take(5).toList
+   val r1 = Gen.unit(3.14).toStream(42).take(5).toList
+   val r2 = Gen.boolean.toStream(42).take(5).toList
+   val r3 = Gen.boolean.listOfN(3).toStream(42).take(5).toList
 }
 
 object Exercise88_TestCases {
