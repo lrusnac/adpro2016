@@ -4,8 +4,6 @@
 
 // 1. Introduction
 //
-// This file contains exercises 2--9
-//
 // This file is best worked on by reading exercise descriptions in the
 // corresponding PDF file.  Then find the place in the file where the stub for
 // the exercise is created and complete it.
@@ -46,7 +44,7 @@ case class Gen[A] (sample :State[RNG,A]) {
 
   // the book uses Stream.unfold, but apparently the standard library lacks this method
 
-  // Exercise 4 (Ex 8.5 second part)
+  // Exercise 3 (Ex 8.5 second part)
   //
   // Hint: The standard library has the following useful function (List
   // companion object):
@@ -64,7 +62,7 @@ case class Gen[A] (sample :State[RNG,A]) {
 
 
 
-  // Exercise 5 (Ex. 8.6 [Chiusano, Bjarnasson 2015])
+  // Exercise 4 (Ex. 8.6 [Chiusano, Bjarnasson 2015])
   //
   // So this is a solution that is ignoring the nice API that we developed.
   // It builds the result from ground up.
@@ -76,11 +74,11 @@ case class Gen[A] (sample :State[RNG,A]) {
 
   // def map[B] (f : A => B) :Gen[B] = this.flatMap (a => Gen.unit[B] (f(a)))
 
-  // Exercise 6 (Second part of Ex. 8.6)
+  // Exercise 5 (Second part of Ex. 8.6)
 
   // def listOfN(size: Gen[Int]): Gen[List[A]] = ...
 
-  // Exercise 7 (Ex. 8.7; I implemented it as a method, the book asks for a
+  // Exercise 6 (Ex. 8.7; I implemented it as a method, the book asks for a
   // function, the difference is minor; you may want to have both for
   // convenience)
   //
@@ -89,7 +87,7 @@ case class Gen[A] (sample :State[RNG,A]) {
 
   // def union (that :Gen[A]) :Gen[A] = ...
 
-  // Exercise 8 continues in the bottom of the file (in the companion object)
+  // Exercise 7 continues in the bottom of the file (in the companion object)
 }
 
 object Gen {
@@ -105,7 +103,7 @@ object Gen {
 
   def anyInteger :Gen[Int] = Gen(State(_.nextInt))
 
-  // Exercise 2 (Ex. 8.4)
+  // Exercise 1 (Ex. 8.4)
   //
   // Hint: Before solving the exercise study the type \lstinline{Gen} in
   // \texttt{Gen.scala}. Then, think how to convert a random integer to a
@@ -117,7 +115,7 @@ object Gen {
 
 
 
-  // Exercise 3 (Exercise 8.5, part one)
+  // Exercise 2 (Exercise 8.5, part one)
   //
   // Hint: The \lstinline{State} trait already had \lstinline{unit}
   // implemented.
@@ -138,9 +136,9 @@ object Gen {
 
 
 
-  // (Exercise 4 is found in the Gen class above)
+  // (Exercise 3 is found in the Gen class above)
 
-  // Exercise 8 (Ex. 8.8 in Chiusano and Bjarnasson)
+  // Exercise 7 (Ex. 8.8 in Chiusano and Bjarnasson)
   //
   // Hint: Recall that we already have a generator of random double numbers
   // from range (0;1); See Exercise 3. First translate weights to
@@ -153,7 +151,7 @@ object Gen {
   // to stream, and try longer and longer prefixes to see if the law of big
   // numbers works
   //
-  // (Exercise 9 is found below in class Prop)
+  // (Exercise 8 is found below in class Prop)
 
 }
 
@@ -193,7 +191,7 @@ import Prop._
 
 case class Prop (run :(TestCases,RNG) => Result) {
 
-  // (Exercise 9)
+  // (Exercise 8)
 
   // def && (that :Prop) :Prop = Prop { ... }
 
