@@ -26,14 +26,34 @@ object Monoid {
 
   // Exercise 10.1
 
-  // val intAddition =
-  // val intMultiplication =
-  // val booleanOr =
-  // val booleanAnd =
+  val intAddition = new Monoid[Int] {
+    override def op(a1: Int, a2: Int): Int = a1 + a2
+    override def zero: Int = 0
+  }
+  val intMultiplication = new Monoid[Int] {
+    override def op(a1: Int, a2: Int): Int = a1 * a2
+    override def zero: Int = 1
+  }
+
+  val booleanOr = new Monoid[Boolean] {
+    override def op(a1: Boolean, a2: Boolean): Boolean = a1 || a2
+    override def zero: Boolean = false
+  }
+
+  val booleanAnd = new Monoid[Boolean] {
+    override def op(a1: Boolean, a2: Boolean): Boolean = a1 && a2
+    override def zero: Boolean = true
+  }
 
   // Exercise 10.2
 
-  // def optionMonoid[A] = ...
+  def optionMonoid[A] = new Monoid[Option[A]] {
+    override def op(a1: Option[A], a2: Option[A]): Option[A] = a1 match {
+      case Some(x) => a1
+      case None => a2
+    }
+    override def zero: Option[A] = None
+  }
 
   def dual[A] (m :Monoid[A]) = new Monoid[A] {
     def op (a1: A, a2: A) = m.op(a2,a1)
@@ -41,7 +61,11 @@ object Monoid {
   }
 
   // Exercise 10.3
-  // def endoMonoid[A] =
+  def endoMonoid[A] = new Monoid[A => A] {
+    //override def op(a1: (A) => A, a2: (A) => A): (A) => A = a1 compose a2
+    override def op(a1: (A) => A, a2: (A) => A): (A) => A = (x: A) => a2(a1(x)) //order should not matter
+    override def zero: (A) => A = (A) => A
+  }
 
   // Exercise 10.4 is solved in MonoidSpec.scala
   //
