@@ -14,9 +14,10 @@ import Arbitrary.arbitrary
 // library streams are stricter than those from the book, so some laziness tests
 // fail on them :)
 
-import stream00._    // uncomment to test the book solution
+//import stream00._    // uncomment to test the book solution
 // import stream01._ // uncomment to test the broken headOption implementation
 // import stream02._ // uncomment to test another version that breaks headOption
+import stream03._ // uncomment to test another version that breaks headOption
 
 class StreamSpecJenjLeru extends FlatSpec with Checkers {
 
@@ -24,8 +25,12 @@ class StreamSpecJenjLeru extends FlatSpec with Checkers {
 
   behavior of "headOption"
 
-  // a scenario test:
+//  For headOption:
+//  - it should return None on an empty stream;  (already included in the examples)
+//  - it should return some for a non-empty stream;  (already included in the examples)
+//  - headOption should not force the tail of the stream.
 
+  // a scenario test:
   it should "return None on an empty Stream (01)" in {
     assert(empty.headOption == None)
   }
@@ -39,15 +44,21 @@ class StreamSpecJenjLeru extends FlatSpec with Checkers {
     yield list2stream (la)
 
   // a property test:
-
   it should "return the head of the stream packaged in Some (02)" in check {
     // the implict makes the generator available in the context
     implicit def arbIntStream = Arbitrary[Stream[Int]] (genNonEmptyStream[Int])
     ("singleton" |:
-      Prop.forAll { (n :Int) => cons (n,empty).headOption == Some (n) } ) &&
+      Prop.forAll { (n :Int) => cons(n,empty).headOption == Some (n) } ) &&
     ("random" |:
       Prop.forAll { (s :Stream[Int]) => s.headOption != None } )
 
+  }
+
+
+  val streamx = cons(100, {throw new RuntimeException("it evaluates the tail")})
+
+  it should "not force the tail of the stream" in {
+    streamx.headOption
   }
 
 }
