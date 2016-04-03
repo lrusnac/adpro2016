@@ -55,10 +55,8 @@ class StreamSpecJenjLeru extends FlatSpec with Checkers {
   }
 
 
-  val streamx = cons(100, {throw new RuntimeException("it evaluates the tail")})
-
   it should "not force the tail of the stream" in {
-    streamx.headOption
+    cons(100, Stream(throw new RuntimeException("it evaluates the tail"))).headOption
   }
 
 }
