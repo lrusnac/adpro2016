@@ -6,11 +6,11 @@
 // https://github.com/rickynils/scalacheck/wiki/User-Guide
 
 package fpinscala.monads
-import org.scalacheck._
+import fpinscala.monads.Functor._
 import org.scalacheck.Prop._
-import Arbitrary.arbitrary
+import org.scalacheck._
+
 import scala.language.higherKinds
-import Functor._
 
 object  FunctorSpec extends Properties("Functor[F[_]] properties..") {
 
@@ -22,7 +22,8 @@ object  FunctorSpec extends Properties("Functor[F[_]] properties..") {
 
   // Exercise 13 (for OptionFunctor)
 
-  // property ...
+  property ("Functor[Option[String]] satisfies the functor law") =
+    mapLaw[String,Option](OptionFunctor)
 }
 
 

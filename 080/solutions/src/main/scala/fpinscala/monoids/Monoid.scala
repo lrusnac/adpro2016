@@ -63,8 +63,8 @@ object Monoid {
   // Exercise 10.3
   def endoMonoid[A] = new Monoid[A => A] {
     //override def op(a1: (A) => A, a2: (A) => A): (A) => A = a1 compose a2
-    override def op(a1: (A) => A, a2: (A) => A): (A) => A = (x: A) => a2(a1(x)) //order should not matter
-    override def zero: (A) => A = (A) => A
+    override def op(a1: (A) => A, a2: (A) => A): (A) => A = (a: A) => a2(a1(a)) //order should not matter
+    override def zero: (A) => A = a => a
   }
 
   // Exercise 10.4 is solved in MonoidSpec.scala
@@ -79,11 +79,26 @@ object Monoid {
 
   // Exercise 10.5 (easy)
 
-  // def foldMap[A,B] (as: List[A], m: Monoid[B]) (f: A=>B): B =
+  def foldMap[A,B] (as: List[A], m: Monoid[B]) (f: A=>B): B = as.foldLeft(m.zero)((b,a) => m.op(b,f(a)))
+
 
   // Exercise 10.7
 
-  // def foldMapV[A,B] (v: IndexedSeq[A], m: Monoid[B]) (f: A => B) :B =
+  def foldMapV[A,B] (v: IndexedSeq[A], m: Monoid[B]) (f: A => B) :B = {
+    if (v.length == 1) {
+      m.op(f(v.head), m.zero)
+    } else if (v.length == 0) {
+      m.op(m.zero,m.zero)
+    }
+    else {
+      val (a, b) = v.splitAt(v.length / 2)
+      val left = foldMapV(a,m)(f)
+      val right = foldMapV(b,m)(f)
+      m.op(left,right)
+    }
+  }
+
+
 
   // Exercise 9
   //
@@ -91,7 +106,10 @@ object Monoid {
   // with scala check for instance by composing an Option[Int] monoid with a
   // List[String] monoid and running through our monoid laws.
 
-  // def productMonoid[A,B] (ma: Monoid[A]) (mb: Monoid[B]) =
+  def productMonoid[A,B] (ma: Monoid[A]) (mb: Monoid[B]) = new Monoid[(A,B)] {
+    override def op(a1: (A, B), a2: (A, B)): (A, B) = (ma.op(a1._1,a2._1),mb.op(a1._2,a2._2))
+    override def zero: (A, B) = (ma.zero,mb.zero)
+  }
 
   // Exercise 10.17
 
@@ -110,11 +128,14 @@ trait Foldable[F[_]] {
 
   // Exercise 10.15 (we use the mixed nature of traits here)
 
-  // def toList[A] (fa: F[A]) :List[A]
+  def toList[A] (fa: F[A]) :List[A] = {
+    foldRight(fa)(List[A]())((a,b) => a :: b)
+  }
 }
 
 // Exercise 10.12 We just do Foldable[List]
 
+//the methods were left in by mistake :(
 object Foldable extends Foldable[List] {
 
   def foldRight[A,B] (as: List[A]) (b: B) (f: (A,B) => B): B = as match {
@@ -136,6 +157,7 @@ object Foldable extends Foldable[List] {
 
 // Exercise 10.14
 
+//the methods were left in by mistake :(
 object FoldableOption extends Foldable[Option] {
 
   def foldRight[A,B] (a: Option[A]) (b: B) (f: (A,B) => B): B = a match {
