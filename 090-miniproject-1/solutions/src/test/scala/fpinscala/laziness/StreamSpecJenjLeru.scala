@@ -66,6 +66,15 @@ class StreamSpecJenjLeru extends FlatSpec with Checkers {
   }
 
   //  - take(n) does not force (n+1)st head ever (even if we force all elements of take(n))
+  it should "not force (n+1)st head ever (even if we force all elements of take(n))" in check {
+    implicit def arbPositiveInt = Arbitrary[Int] (Gen.choose(0, 100))
+    Prop.forAll{(n :Int) => {
+        val streamExceptions = ones.map(x => Stream(throw new RuntimeException("forced the n+1")))
+        val streamx = ones.take(n).append(streamExceptions)
+        streamx.take(n).toList == ones.take(n).toList // in this way we also test the append
+      }
+    }
+  }
 
   //  - s.take(n).take(n) == s.take(n) for any Stream s and any n
   it should "match all prefix of original stream" in check {
@@ -78,26 +87,67 @@ class StreamSpecJenjLeru extends FlatSpec with Checkers {
   }
 
   behavior of "drop"
-//  - s.drop(n).drop(m) == s.drop(n+m) for any n, m (additivity)
+  //  - s.drop(n).drop(m) == s.drop(n+m) for any n, m (additivity)
   it should "additivity" in check {
     implicit def arbIntStream = Arbitrary[Stream[Int]] (genNonEmptyStream[Int])
     implicit def arbPositiveInt = Arbitrary[Int] (Gen.choose(0, 100))
     Prop.forAll{(s :Stream[Int], n:Int, m:Int) => s.drop(n).drop(m).toList == s.drop(n+m).toList}
   }
-//  - s.drop(n) does not force any of the dropped elements heads
-//  - the above should hold even if we force some stuff in the tail
+  //  - s.drop(n) does not force any of the dropped elements heads
+  //  - the above should hold even if we force some stuff in the tail
+  it should "not force any of the dropped elements heads" in {
+    implicit def arbPositiveInt = Arbitrary[Int] (Gen.choose(0, 100))
+    Prop.forAll{(n :Int) => {
+      val streamExceptions = ones.map(x => Stream(throw new RuntimeException("forced the head"))).take(n).append(ones)
+      streamExceptions.drop(n)
+      true
+    }
+    }
+  }
+
 
   behavior of "map"
-//  - x.map(id) == x (where id is the identity function)
+  //  - x.map(id) == x (where id is the identity function)
   it should "identity" in check {
     implicit def arbIntStream = Arbitrary[Stream[Int]] (genNonEmptyStream[Int])
     Prop.forAll{(s :Stream[Int]) => s.map(m => m).toList == s.toList}
   }
-//  - map terminates on infinite streams
+  //  - map terminates on infinite streams
+  it should "terminate on infinite stream" in {
+    ones.map(x => x)
+  }
 
   behavior of "append"
-//  - propose properties yourself
+  //  - propose properties yourself
 
+  // appending nothing to stream is the stream
+  it should "nothing append stream = stream" in check {
+    implicit def arbIntStream = Arbitrary[Stream[Int]] (genNonEmptyStream[Int])
+    Prop.forAll{(s :Stream[Int]) => empty.append(s).toList == s.toList}
+  }
 
+  // appending stream to nothing is the stream
+  it should "stream append nothing = stream" in check {
+    implicit def arbIntStream = Arbitrary[Stream[Int]] (genNonEmptyStream[Int])
+    Prop.forAll{(s :Stream[Int]) => s.append(empty).toList == s.toList}
+  }
+
+  // appending infinite streams terminates // scenario test
+  it should "terminate" in {
+    ones.append(ones)
+  }
+
+  // appending stream of n elements with stream of m elements has n+m elements // order? => scenario test
+  it should "sum of elements" in check {
+    implicit def arbPositiveInt = Arbitrary[Int] (Gen.choose(0, 100))
+    Prop.forAll{(n:Int, m:Int) => ones.take(n).append(ones.take(m)).toList.size == n+m}
+  }
+  // appending two streams does not force any of the elements
+  it should "not force the elements" in {
+    val stream1 = ones.map(x => Stream(throw new RuntimeException("forced the stream 1")))
+    val stream2 = ones.map(x => Stream(throw new RuntimeException("forced the stream 2")))
+    stream1.append(stream2)
+    true
+  }
 
 }
