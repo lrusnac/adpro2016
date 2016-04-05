@@ -17,12 +17,7 @@ trait Stream[+A] {
   correct order again.
   */
   def toList: List[A] = {
-    @annotation.tailrec
-    def go(s: Stream[A], acc: List[A]): List[A] = s match {
-      case Cons(h,t) => go(t(), h() :: acc)
-      case _ => acc
-    }
-    go(this, List()).reverse
+    toListFast
   }
 
   /*
@@ -32,15 +27,7 @@ trait Stream[+A] {
   still _pure_.
   */
   def toListFast: List[A] = {
-    val buf = new collection.mutable.ListBuffer[A]
-    @annotation.tailrec
-    def go(s: Stream[A]): List[A] = s match {
-      case Cons(h,t) =>
-        buf += h()
-        go(t())
-      case _ => buf.toList
-    }
-    go(this)
+    List()
   }
 
   /*
@@ -95,7 +82,6 @@ trait Stream[+A] {
 
   def headOption: Option[A] =
     foldRight(None: Option[A])((h,t) => {
-      t.toList
       Some(h)
     })
 
