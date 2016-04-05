@@ -20,6 +20,7 @@ import stream00._    // uncomment to test the book solution
 // import stream03._ // evaluate tail on headOption
 
 // import stream04._ // evaluates head and tail inside take
+//import stream100._ // toList is bad
 
 class StreamSpecJenjLeru extends FlatSpec with Checkers {
 
@@ -135,6 +136,8 @@ class StreamSpecJenjLeru extends FlatSpec with Checkers {
   // appending infinite streams terminates // scenario test
   it should "terminate" in {
     ones.append(ones)
+    fibs.append(fibs)
+    fibsViaUnfold.append(fibsViaUnfold)
   }
 
   // appending stream of n elements with stream of m elements has n+m elements // order? => scenario test
@@ -142,12 +145,31 @@ class StreamSpecJenjLeru extends FlatSpec with Checkers {
     implicit def arbPositiveInt = Arbitrary[Int] (Gen.choose(0, 100))
     Prop.forAll{(n:Int, m:Int) => ones.take(n).append(ones.take(m)).toList.size == n+m}
   }
-  // appending two streams does not force any of the elements
-  it should "not force the elements" in {
-    val stream1 = ones.map(x => Stream(throw new RuntimeException("forced the stream 1")))
-    val stream2 = ones.map(x => Stream(throw new RuntimeException("forced the stream 2")))
+  // appending two streams does not force the tail
+  it should "not force the tail" in {
+    val stream1 = Stream(1)
+    val stream2 = ones.map(x => throw new RuntimeException("forced the stream 2"))
     stream1.append(stream2)
     true
   }
+
+  behavior of "map"
+  it should "not force anything" in check {
+    implicit def arbIntStream = Arbitrary[Stream[Int]] (genNonEmptyStream[Int])
+    Prop.forAll{(s :Stream[Int]) => s.map(x => throw new RuntimeException("map forced")); true }
+  }
+
+  behavior of "toList"
+
+  it should "return empty list work for empty streams" in {
+    assert(Stream().toList == Empty.toList)
+    assert(Stream().toList.size == 0)
+  }
+
+  it should "should be same size as List.fill(n,0).size" in check {
+    implicit def arbPositiveInt = Arbitrary[Int] (Gen.choose(0, 1000))
+    Prop.forAll{(n:Int) => ones.take(n).toList.size == List.fill(n)(0).size}
+  }
+
 
 }
