@@ -152,13 +152,7 @@ class StreamSpecJenjLeru extends FlatSpec with Checkers {
     stream1.append(stream2)
     true
   }
-
-  behavior of "map"
-  it should "not force anything" in check {
-    implicit def arbIntStream = Arbitrary[Stream[Int]] (genNonEmptyStream[Int])
-    Prop.forAll{(s :Stream[Int]) => s.map(x => throw new RuntimeException("map forced")); true }
-  }
-
+  
   behavior of "toList"
 
   it should "return empty list work for empty streams" in {
