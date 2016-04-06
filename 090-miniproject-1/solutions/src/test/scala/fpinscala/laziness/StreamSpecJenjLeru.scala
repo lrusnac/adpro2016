@@ -118,6 +118,11 @@ class StreamSpecJenjLeru extends FlatSpec with Checkers {
     ones.map(x => x)
   }
 
+  it should "not force anything" in check {
+    implicit def arbIntStream = Arbitrary[Stream[Int]] (genNonEmptyStream[Int])
+    Prop.forAll{(s :Stream[Int]) => s.map(x => throw new RuntimeException("map forced")); true }
+  }
+
   behavior of "append"
   //  - propose properties yourself
 
