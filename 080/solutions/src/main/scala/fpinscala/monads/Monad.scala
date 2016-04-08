@@ -2,6 +2,7 @@
 // Andrzej Wasowski, IT University of Copenhagen
 package fpinscala.monads
 
+import scala.annotation.tailrec
 import scala.language.higherKinds
 
 trait Functor[F[_]] {
@@ -55,24 +56,28 @@ trait Monad[F[_]] {
   // Exercise 11.4
 
   def replicateM[A] (n: Int, ma: F[A]): F[List[A]] = {
-    def repl(n:Int, ma:F[A]): List[F[A]] = {
-      if (n>0) ma::repl(n-1,ma)
-      else List(ma)
+    @tailrec
+    def repl(n:Int, ma:F[A], xs: List[F[A]]): List[F[A]] = {
+      if (n>0) repl(n-1,ma,ma::xs)
+      else ma :: xs
     }
-
-    //mmm...
-    traverse(repl(n,ma))(x => x)
+    traverse(repl(n,ma,List[F[A]]()))(x => x)
   }
 
   def join[A](mma: F[F[A]]): F[A] = flatMap(mma)(ma => ma)
 
   // Exercise 11.7
 
-  // def compose[A,B,C] (f: A => F[B], g: B => F[C]): A => F[C] =
+  def compose[A,B,C] (f: A => F[B], g: B => F[C]): A => F[C] = a => flatMap(f(a))(g)
+
 
   // Exercise 11.8
+  def flatMap_compose[A,B] (ma: F[A]) (f: A => F[B]) :F[B] = {
+    //identity function means that F[A] => F[A] (which is A in compose A=>F[B])
+    def id = (x:F[A]) => x
+    compose(id,f)(ma)
+  }
 
-  // def flatMap_compose[A,B] (ma: F[A]) (f: A => F[B]) :F[B] =
 
 }
 
