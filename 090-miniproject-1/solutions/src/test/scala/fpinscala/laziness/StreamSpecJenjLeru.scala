@@ -118,9 +118,10 @@ class StreamSpecJenjLeru extends FlatSpec with Checkers {
     ones.map(x => x)
   }
 
-  it should "not force anything" in check {
+  it should "not force anything in second stream" in check {
     implicit def arbIntStream = Arbitrary[Stream[Int]] (genNonEmptyStream[Int])
     Prop.forAll{(s :Stream[Int]) => s.map(x => throw new RuntimeException("map forced")); true }
+
   }
 
   behavior of "append"
@@ -147,7 +148,7 @@ class StreamSpecJenjLeru extends FlatSpec with Checkers {
 
   // appending stream of n elements with stream of m elements has n+m elements // order? => scenario test
   it should "sum of elements" in check {
-    implicit def arbPositiveInt = Arbitrary[Int] (Gen.choose(0, 100))
+    implicit def arbPositiveInt = Arbitrary[Int] (Gen.choose(0, Int.MaxValue/2))
     Prop.forAll{(n:Int, m:Int) => ones.take(n).append(ones.take(m)).toList.size == n+m}
   }
   // appending two streams does not force the tail
@@ -159,10 +160,10 @@ class StreamSpecJenjLeru extends FlatSpec with Checkers {
   }
 
 
-  //it seems appending two streams WILL force the head of stream1
+  //it seems appending two streams WILL force the head of stream1 because of foldRight
   it should "force only the head of stream 1" in {
     val stream1 = Stream.cons(1,
-      Stream(throw new RuntimeException("forced some part of stream1 (not head)")))
+      ones.map(x => throw new RuntimeException("forced some part of stream1 (not head)")))
     val stream2 = ones.map(x => throw new RuntimeException("forced the stream 2"))
     stream1.append(stream2)
     true
