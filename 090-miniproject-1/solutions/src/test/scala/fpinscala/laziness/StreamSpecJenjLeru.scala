@@ -16,7 +16,7 @@ import Arbitrary.arbitrary
 
 import stream00._    // uncomment to test the book solution
 // import stream01._ // uncomment to test the broken headOption implementation
-// import stream02._ // uncomment to test another version that breaks headOption
+//import stream02._ // uncomment to test another version that breaks headOption
 // import stream03._ // evaluate tail on headOption
 
 // import stream04._ // evaluates head and tail inside take
@@ -62,7 +62,7 @@ class StreamSpecJenjLeru extends FlatSpec with Checkers {
   behavior of "take"
   // - take should not force any heads nor any tails of the Stream it manipulates
   it should "not force any heads nor any tails of the Stream it manipulates" in {
-    cons(Stream(throw new RuntimeException("it evaluates the head")),
+    cons(throw new RuntimeException("it evaluates the head"),
       Stream(throw new RuntimeException("it evaluates the tail"))).take(1)
   }
 
@@ -102,7 +102,7 @@ class StreamSpecJenjLeru extends FlatSpec with Checkers {
       val streamExceptions = ones.map(x => Stream(throw new RuntimeException("forced the head"))).take(n).append(ones)
       streamExceptions.drop(n)
       true
-    }
+      }
     }
   }
 
@@ -157,7 +157,17 @@ class StreamSpecJenjLeru extends FlatSpec with Checkers {
     stream1.append(stream2)
     true
   }
-  
+
+
+  //it seems appending two streams WILL force the head of stream1
+  it should "force only the head of stream 1" in {
+    val stream1 = Stream.cons(1,
+      Stream(throw new RuntimeException("forced some part of stream1 (not head)")))
+    val stream2 = ones.map(x => throw new RuntimeException("forced the stream 2"))
+    stream1.append(stream2)
+    true
+  }
+
   behavior of "toList"
 
   it should "return empty list work for empty streams" in {
