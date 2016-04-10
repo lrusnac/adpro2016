@@ -96,11 +96,11 @@ class StreamSpecJenjLeru extends FlatSpec with Checkers {
   }
   //  - s.drop(n) does not force any of the dropped elements heads
   //  - the above should hold even if we force some stuff in the tail
-  it should "not force any of the dropped elements heads" in {
+  it should "not force any of the dropped elements heads" in check {
     implicit def arbPositiveInt = Arbitrary[Int] (Gen.choose(0, 100))
     Prop.forAll{(n :Int) => {
-      val streamExceptions = ones.map(x => Stream(throw new RuntimeException("forced the head"))).take(n).append(ones)
-      streamExceptions.drop(n)
+      val streamExceptions = cons(1,ones.map(x => throw new RuntimeException("forced the head"))).take(n+1).append(ones)
+      streamExceptions.drop(n+1).take(10).toList
       true
       }
     }
@@ -148,7 +148,7 @@ class StreamSpecJenjLeru extends FlatSpec with Checkers {
 
   // appending stream of n elements with stream of m elements has n+m elements // order? => scenario test
   it should "sum of elements" in check {
-    implicit def arbPositiveInt = Arbitrary[Int] (Gen.choose(0, Int.MaxValue/2))
+    implicit def arbPositiveInt = Arbitrary[Int] (Gen.choose(0, 1000))
     Prop.forAll{(n:Int, m:Int) => ones.take(n).append(ones.take(m)).toList.size == n+m}
   }
   // appending two streams does not force the tail
