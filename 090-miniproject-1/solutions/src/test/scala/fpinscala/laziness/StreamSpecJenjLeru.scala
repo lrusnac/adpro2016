@@ -1,13 +1,13 @@
 // Advanced Programming
 
 package fpinscala.laziness
-import scala.language.higherKinds
-
+import org.scalacheck.Arbitrary.arbitrary
+import org.scalacheck.Prop._
+import org.scalacheck._
 import org.scalatest.FlatSpec
 import org.scalatest.prop.Checkers
-import org.scalacheck._
-import org.scalacheck.Prop._
-import Arbitrary.arbitrary
+
+import scala.language.higherKinds
 
 // If you comment out all the import lines below, then you test the Scala
 // Standard Library implementation of Streams. Interestingly, the standard
@@ -19,7 +19,7 @@ import stream00._    // uncomment to test the book solution
 //import stream02._ // uncomment to test another version that breaks headOption
 // import stream03._ // evaluate tail on headOption
 
-// import stream04._ // evaluates head and tail inside take
+//import stream04._ // evaluates head and tail inside take
 //import stream100._ // toList is bad
 
 class StreamSpecJenjLeru extends FlatSpec with Checkers {
@@ -42,7 +42,35 @@ class StreamSpecJenjLeru extends FlatSpec with Checkers {
   // In ScalaTest we use the check method to switch to ScalaCheck's internal DSL
   def genNonEmptyStream[A] (implicit arbA :Arbitrary[A]) :Gen[Stream[A]] =
     for { la <- arbitrary[List[A]] suchThat (_.nonEmpty)}
-    yield list2stream (la)
+      yield list2stream (la)
+
+  //will create a stream of integers of infinite size
+  def infStream[A] (implicit arbA :Arbitrary[A]) :Gen[Stream[A]] = {
+    val arb = arbitrary[A]
+    def inf: Stream[A] = Stream.cons[A](arb.sample.ensuring(_.isDefined).get,inf)
+    Gen.const(inf)
+  }
+
+  def infStreamExceptions[A] (implicit arbA :Arbitrary[A]) :Gen[Stream[A]] = {
+    def inf: Stream[A] = Stream.cons[A](throw new RuntimeException("inf stream of exception forced"),inf)
+    Gen.const(inf)
+  }
+
+  def prefixedExceptionStream[A](implicit arbA :Arbitrary[A]) :Gen[(Int,Stream[A])] = {
+    val arb = arbitrary[A]
+
+    def toN(n:Int): Stream[A] = {
+      if (n>0) Stream.cons(throw new RuntimeException("exception stream forced"),toN(n-1))
+      else Stream.cons[A](arb.sample.ensuring(_.isDefined).get,toN(-100))
+    }
+
+    for {
+      length <- Gen.choose(0,100)
+      s <- Gen.const(toN(length))
+
+    } yield (length, s)
+  }
+
 
   // a property test:
   it should "return the head of the stream packaged in Some (02)" in check {
@@ -64,27 +92,54 @@ class StreamSpecJenjLeru extends FlatSpec with Checkers {
   it should "not force any heads nor any tails of the Stream it manipulates" in {
     cons(throw new RuntimeException("it evaluates the head"),
       Stream(throw new RuntimeException("it evaluates the tail"))).take(1)
+    cons(throw new RuntimeException("it evaluates the head"),
+      throw new RuntimeException("it evaluates the tail which wasn't even a stream, gasp!")).take(2)
   }
 
   //  - take(n) does not force (n+1)st head ever (even if we force all elements of take(n))
   it should "not force (n+1)st head ever (even if we force all elements of take(n))" in check {
     implicit def arbPositiveInt = Arbitrary[Int] (Gen.choose(0, 1000))
+    implicit def prefixedInfStream = Arbitrary[(Int,Stream[Char])](prefixedExceptionStream[Char])
+
     Prop.forAll{(n :Int) => {
         val streamExceptions = ones.map(x => throw new RuntimeException("forced the n+1"))
         val streamx = ones.take(n).append(streamExceptions)
         streamx.take(n).toList == ones.take(n).toList // in this way we also test the append
       }
-    }
+    } &&
+      ("inf stream with prefixed exceptions" |:
+        Prop.forAll((x: (Int,Stream[Char])) => {
+          val length = x._1;
+          val s = x._2
+
+          //manually force head
+          //s.take(length).headOption
+          //println(s.take(length))
+
+          for (n <- 0 until length + 1) {
+            s.take(n) match {
+              //if forced will give exception
+              case Cons(a, b) => true //not forced
+              case Empty => true //empty can happen due to generator
+              case _ => throw new RuntimeException("head was forced at "+n)
+            }
+          }
+          true
+        }))
   }
 
   //  - s.take(n).take(n) == s.take(n) for any Stream s and any n
   it should "match all prefix of original stream" in check {
     implicit def arbIntStream = Arbitrary[Stream[Int]] (genNonEmptyStream[Int])
     implicit def arbPositiveInt = Arbitrary[Int] (Gen.choose(0, 100))
+    implicit def arbCharInfStream = Arbitrary[Stream[Char]] (infStream[Char])
     ("fixed n" |:
       Prop.forAll{(s :Stream[Int]) => s.take(1).take(1).toList == s.take(1).toList}) &&
     ("generated n" |:
-      Prop.forAll{(s :Stream[Int], n: Int) => s.take(n).take(n).toList == s.take(n).toList})
+      Prop.forAll{(s :Stream[Int], n: Int) => s.take(n).take(n).toList == s.take(n).toList}) &&
+    ("generated n, inf streams" |:
+      Prop.forAll{(s :Stream[Char], n: Int) =>
+        s.take(n).take(n).toList == s.take(n).toList && s.take(n).toList != s.take(n+1).toList})
   }
 
   behavior of "drop"
@@ -92,18 +147,20 @@ class StreamSpecJenjLeru extends FlatSpec with Checkers {
   it should "additivity" in check {
     implicit def arbIntStream = Arbitrary[Stream[Int]] (genNonEmptyStream[Int])
     implicit def arbPositiveInt = Arbitrary[Int] (Gen.choose(0, 100))
-    Prop.forAll{(s :Stream[Int], n:Int, m:Int) => s.drop(n).drop(m).toList == s.drop(n+m).toList}
-  }
+    implicit def arbCharStreamInf = Arbitrary[Stream[Char]](infStream[Char])
+    ("fixed size streams" |:
+      Prop.forAll{(s :Stream[Int], n:Int, m:Int) => s.drop(n).drop(m).toList == s.drop(n+m).toList})
+    }
   //  - s.drop(n) does not force any of the dropped elements heads
   //  - the above should hold even if we force some stuff in the tail
   it should "not force any of the dropped elements heads" in check {
+    implicit def prefixedInfStream = Arbitrary[(Int,Stream[Char])](prefixedExceptionStream[Char])
     implicit def arbPositiveInt = Arbitrary[Int] (Gen.choose(0, 100))
-    Prop.forAll{(n :Int) => {
-      val streamExceptions = cons(1,ones.map(x => throw new RuntimeException("forced the head"))).take(n+1).append(ones)
-      streamExceptions.drop(n+1).take(10).toList
+    ("inf stream with prefixed exceptions" |: Prop.forAll { (x: (Int,Stream[Char])) => {
+      x._2.drop(x._1).take(10).toList; //force some amount in the tail
       true
-      }
     }
+    })
   }
 
 
@@ -161,7 +218,7 @@ class StreamSpecJenjLeru extends FlatSpec with Checkers {
 
 
   //it seems appending two streams WILL force the head of stream1 because of foldRight
-  it should "force only the head of stream 1" in {
+  it should "not force the head of stream 1 and not force stream2" in {
     val stream1 = Stream.cons(1,
       ones.map(x => throw new RuntimeException("forced some part of stream1 (not head)")))
     val stream2 = ones.map(x => throw new RuntimeException("forced the stream 2"))
