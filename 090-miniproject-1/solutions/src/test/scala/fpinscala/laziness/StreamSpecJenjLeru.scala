@@ -99,33 +99,12 @@ class StreamSpecJenjLeru extends FlatSpec with Checkers {
   //  - take(n) does not force (n+1)st head ever (even if we force all elements of take(n))
   it should "not force (n+1)st head ever (even if we force all elements of take(n))" in check {
     implicit def arbPositiveInt = Arbitrary[Int] (Gen.choose(0, 1000))
-    implicit def prefixedInfStream = Arbitrary[(Int,Stream[Char])](prefixedExceptionStream[Char])
-
     Prop.forAll{(n :Int) => {
         val streamExceptions = ones.map(x => throw new RuntimeException("forced the n+1"))
         val streamx = ones.take(n).append(streamExceptions)
         streamx.take(n).toList == ones.take(n).toList // in this way we also test the append
       }
-    } &&
-      ("inf stream with prefixed exceptions" |:
-        Prop.forAll((x: (Int,Stream[Char])) => {
-          val length = x._1;
-          val s = x._2
-
-          //manually force head
-          //s.take(length).headOption
-          //println(s.take(length))
-
-          for (n <- 0 until length + 1) {
-            s.take(n) match {
-              //if forced will give exception
-              case Cons(a, b) => true //not forced
-              case Empty => true //empty can happen due to generator
-              case _ => throw new RuntimeException("head was forced at "+n)
-            }
-          }
-          true
-        }))
+    }
   }
 
   //  - s.take(n).take(n) == s.take(n) for any Stream s and any n
