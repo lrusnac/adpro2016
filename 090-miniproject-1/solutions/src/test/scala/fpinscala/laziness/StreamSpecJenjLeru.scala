@@ -197,7 +197,7 @@ class StreamSpecJenjLeru extends FlatSpec with Checkers {
 
 
   //it seems appending two streams WILL force the head of stream1 because of foldRight
-  it should "not force the head of stream 1 and not force stream2" in {
+  it should "not force the tail of stream 1 and not force stream2" in {
     val stream1 = Stream.cons(1,
       ones.map(x => throw new RuntimeException("forced some part of stream1 (not head)")))
     val stream2 = ones.map(x => throw new RuntimeException("forced the stream 2"))
