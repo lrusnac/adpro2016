@@ -205,6 +205,11 @@ class StreamSpecJenjLeru extends FlatSpec with Checkers {
     true
   }
 
+  it should "uphold associativity a(b)(c) == a(b(c))" in check {
+    implicit def arbIntStream = Arbitrary[Stream[Int]] (genNonEmptyStream[Int])
+    Prop.forAll{(a: Stream[Int], b: Stream[Int], c: Stream[Int]) => a.append(b).append(c).toList == a.append(b.append(c)).toList}
+  }
+
   behavior of "toList"
 
   it should "return empty list work for empty streams" in {
