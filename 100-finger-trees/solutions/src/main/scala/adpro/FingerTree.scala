@@ -31,7 +31,7 @@ object data {
 
     // page 3
 
-    // def toList[A] (fa: F[A]) :List[A] = ...
+    def toList[A] (fa: F[A]) :List[A] = reduceR( (a: A,b: List[A]) => a::b )(fa,List[A]())
 
     // page 6
     //
@@ -46,7 +46,7 @@ object data {
 
     // uncomment the delagation once Node.toList is implemented
     //
-    // def toList :List[A] = Node.toList (this)
+    def toList :List[A] = Node.toList (this)
   }
 
   case class Node2[A] (l :A, r :A) extends Node[A]
@@ -121,12 +121,12 @@ object data {
 
   // several convenience operations for Digits.
   //
-  object Digit { // extends Reduce[Digit] { // uncomment once the interfaces are provided
+  object Digit extends Reduce[Digit] { // uncomment once the interfaces are provided
 
     // page 3, top
     //
-    // def reduceR[A,Z] (opr: (A,Z) => Z) (d: Digit[A], z: Z) :Z = ...
-    // def reduceL[A,Z] (opl: (Z,A) => Z) (z: Z, d: Digit[A]) :Z = ...
+    def reduceR[A,Z] (opr: (A,Z) => Z) (d: Digit[A], z: Z) :Z = d.foldRight(z)(opr)
+    def reduceL[A,Z] (opl: (Z,A) => Z) (z: Z, d: Digit[A]) :Z = d.foldLeft(z)(opl)
 
     // Digit inherits toTree from Reduce[Digit] that we will also apply to other
     // lists, but this object is a convenient place to put it (even if not all
@@ -143,23 +143,28 @@ object data {
   }
 
 
-  object Node // extends Reduce[Node] {
+  object Node extends Reduce[Node] {
 
     // page 5, top
-    // def reduceR[A,Z] (opr: (A,Z) => Z) (n :Node[A], z: Z) :Z = ...
-    // def reduceL[A,Z] (opl: (Z,A) => Z) (z: Z, n :Node[A]) :Z = ...
-  // }
+    def reduceR[A,Z] (opr: (A,Z) => Z) (n :Node[A], z: Z) :Z = n match {
+      case Node2(l: Node[A], r: Node[A]) => reduceR(opr)(l,reduceR(opr)(r,z))
+      case Node3(l: Node[A],m: Node[A],r: Node[A]) => reduceR(opr)(l,reduceR(opr)(m,reduceR(opr)(r,z)))
+    }
+    def reduceL[A,Z] (opl: (Z,A) => Z) (z: Z, n :Node[A]) :Z = n match {
+      case Node2(l: Node[A], r: Node[A]) => reduceL(opl)(reduceL(opl)(z, r), l)
+      case Node3(l: Node[A], m: Node[A], r: Node[A]) => reduceL(opl)(reduceL(opl)(reduceL(opl)(z, r), m), l)
+    }
 
 
 
   // Most of the paper's key functions are in the module below.
 
-  object FingerTree { // extends Reduce[FingerTree] { // uncomment once the interface is implemented
+  object FingerTree extends Reduce[FingerTree] { // uncomment once the interface is implemented
 
     // page 5
-    // def reduceR[A,Z] (opr: (A,Z) => Z) (t: FingerTree[A], z: Z) :Z = ...
+    def reduceR[A,Z] (opr: (A,Z) => Z) (t: FingerTree[A], z: Z) :Z =
 
-    // def reduceL[A,Z] (opl: (Z,A) => Z) (z: Z, t: FingerTree[A]) :Z = ...
+    // def reduceL[A,Z] (opl: (Z,A) => Z) (z: Z, t: FingerTree[A]) :Z = ..
 
     // page 5 bottom (the left triangle); Actually we could use the left
     // triangle in Scala but I am somewhat old fashioned ...
