@@ -46,7 +46,7 @@ object data {
 
     // uncomment the delagation once Node.toList is implemented
     //
-    def toList :List[A] = Node.toList (this)
+    //def toList :List[A] =
   }
 
   case class Node2[A] (l :A, r :A) extends Node[A]
@@ -159,12 +159,34 @@ object data {
 
   // Most of the paper's key functions are in the module below.
 
-  object FingerTree extends Reduce[FingerTree] { // uncomment once the interface is implemented
+  object FingerTree extends Reduce[FingerTree] {
+    // uncomment once the interface is implemented
 
     // page 5
-    def reduceR[A,Z] (opr: (A,Z) => Z) (t: FingerTree[A], z: Z) :Z =
+    def reduceR[A, Z](opr: (A, Z) => Z)(t: FingerTree[A], z: Z): Z = t match {
+      case Empty() => z
+      case Single(a) => opr(a, z)
+      case Deep(pr, m, sf) => {
+        val sfResult = Digit.reduceR(opr)(sf, z)
+        val redred = FingerTree.reduceR(Node.reduceR(opr))
+        val mResult = redred(m, sfResult)
+        Digit.reduceR(opr)(pr, mResult) //must be digit ? because pr is Digit
+      }
 
-    // def reduceL[A,Z] (opl: (Z,A) => Z) (z: Z, t: FingerTree[A]) :Z = ..
+    }
+
+    def reduceL[A, Z](opl: (Z, A) => Z)(z: Z, t: FingerTree[A]): Z = t match {
+      case Empty() => z
+      case Single(a) => opl(z,a)
+      case Deep(pr, m, sf) => {
+        val sfResult = Digit.reduceL(opl)(z,sf)
+        val redred = FingerTree.reduceL(Node.reduceL(opl))
+        val mResult = redred(sfResult,m)
+        Digit.reduceL(opl)(mResult,pr) //must be digit ? because pr is Digit
+      }
+
+    }
+  }
 
     // page 5 bottom (the left triangle); Actually we could use the left
     // triangle in Scala but I am somewhat old fashioned ...
