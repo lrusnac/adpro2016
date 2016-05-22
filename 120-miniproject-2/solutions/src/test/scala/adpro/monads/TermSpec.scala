@@ -4,9 +4,7 @@
 // Simple scenario based tests for term evaluators of Wadler
 // (actually there is only two tests, that are taken directly from the paper)
 // (more could be taken from later sections)
-
 package adpro.monads
-
 import scala.language.higherKinds
 
 import org.scalatest.FlatSpec
@@ -22,11 +20,11 @@ class  TermSpec extends FlatSpec with Checkers {
   // test cases, also from Section 2.1 [Wadler]:
 
   val answer = Div (
-    Div (Con (1972), Con (2)),
-    Con (23)
-  )
-  val error = Div ( Con (1), Con (0) )
-  val const = Con (42)
+                  Div (Cons (1972), Cons (2)),
+                  Cons (23)
+               )
+  val error = Div ( Cons (1), Cons (0) )
+  val const = Cons (42)
 
 
   // generator of some random divisions
@@ -34,19 +32,19 @@ class  TermSpec extends FlatSpec with Checkers {
     implicit val int100 = Arbitrary[Int](Gen.choose[Int](0,999))
     arbitrary[List[Int]].suchThat(l => l.nonEmpty && l.forall (_!=0)).
       flatMap[List[Term]] ( li =>
-      li.sorted.map (Con compose Math.abs) ).
+        li.sorted.map (Cons compose Math.abs) ).
       flatMap[Term] ( lc =>
-      lc.tail.foldLeft[Term] (lc.head) (Div)
-    )}
+        lc.tail.foldLeft[Term] (lc.head) (Div)
+  )}
 
   val genUnsafeTerm :Gen[Term] = {
     implicit val int100 = Arbitrary[Int](Gen.choose[Int](0,999))
     arbitrary[List[Int]].suchThat(l => l.nonEmpty && l.forall (_!=0)).
       flatMap[List[Term]] ( li =>
-      li.sorted.map (Con compose Math.abs) ).
+        li.sorted.map (Cons compose Math.abs) ).
       flatMap[Term] ( lc =>
-      lc.foldRight[Term] (Con(0)) (Div)
-    )}
+        lc.foldRight[Term] (Cons(0)) (Div)
+  )}
 
   // Section 2.1
 
@@ -56,12 +54,12 @@ class  TermSpec extends FlatSpec with Checkers {
   it should "return 42 from a constant " in {
     BasicEvaluator.eval (const) shouldBe 42 }
   it should "throw a scala exception on division by 0" in
-    { intercept[java.lang.ArithmeticException] {
-      BasicEvaluator.eval (error) } }
+  { intercept[java.lang.ArithmeticException] {
+    BasicEvaluator.eval (error) } }
   it should "crash on unsafe terms" in check {
     forAll (genUnsafeTerm) ( (t: Term) => {
       intercept[java.lang.ArithmeticException] {
-        BasicEvaluator.eval (t)}; true }
+      BasicEvaluator.eval (t)}; true }
     )
   }
 
@@ -69,11 +67,11 @@ class  TermSpec extends FlatSpec with Checkers {
 
   behavior of "Exception eval"
   it should "answer Return(42) to our division [Wadler]" in
-    { ExceptionEvaluator.eval (answer) shouldBe ExceptionEvaluator.Return(42) }
+  { ExceptionEvaluator.eval (answer) shouldBe ExceptionEvaluator.Return(42) }
   it should "answer Return(42) to a constant" in
-    { ExceptionEvaluator.eval (const) shouldBe ExceptionEvaluator.Return(42) }
+  { ExceptionEvaluator.eval (const) shouldBe ExceptionEvaluator.Return(42) }
   it should "return an exception value for a division by zero" in
-    { ExceptionEvaluator.eval (error) shouldBe a [ExceptionEvaluator.Raise] }
+  { ExceptionEvaluator.eval (error) shouldBe a [ExceptionEvaluator.Raise] }
 
   // Section 2.3 [Wadler] Variation two: State
 
@@ -87,16 +85,16 @@ class  TermSpec extends FlatSpec with Checkers {
       StateEvaluator.eval (const).step (n) == (42,n) } }
 
   it should "throw a scala exception on division by 0" in
-    { intercept[java.lang.ArithmeticException] {
-      StateEvaluator.eval (error).step (0) } }
+  { intercept[java.lang.ArithmeticException] {
+    StateEvaluator.eval (error).step (0) } }
 
   // Section 2.4 [Wadler] Variation three: Output
 
-  val result = "eval(Con(1972)) <= 1972\n" +
-    "eval(Con(2)) <= 2\n" +
-    "eval(Div(Con(1972),Con(2))) <= 986\n" +
-    "eval(Con(23)) <= 23\n" +
-    "eval(Div(Div(Con(1972),Con(2)),Con(23))) <= 42\n"
+  val result = "eval(Cons(1972)) <= 1972\n" +
+               "eval(Cons(2)) <= 2\n" +
+               "eval(Div(Cons(1972),Cons(2))) <= 986\n" +
+               "eval(Cons(23)) <= 23\n" +
+               "eval(Div(Div(Cons(1972),Cons(2)),Cons(23))) <= 42\n"
 
   behavior of "Output eval (answer)"
   it should "give good 'result' and string output" in {
@@ -107,11 +105,11 @@ class  TermSpec extends FlatSpec with Checkers {
   it should "return simple result for a constant" in {
     val r = OutputEvaluator.eval(const)
     r.a shouldBe 42
-    r.o shouldBe "eval(Con(42)) <= 42\n"
+    r.o shouldBe "eval(Cons(42)) <= 42\n"
   }
   it should "throw a scala exception on division by 0" in
-    { intercept[java.lang.ArithmeticException] {
-      OutputEvaluator.eval (error) } }
+  { intercept[java.lang.ArithmeticException] {
+    OutputEvaluator.eval (error) } }
 
 
 
@@ -120,18 +118,18 @@ class  TermSpec extends FlatSpec with Checkers {
   behavior of "Basic monadic eval"
 
   it should "be 42 [Wadler]" in
-    { BasicEvaluatorWithMonads.eval (answer).a shouldBe 42 }
+  { BasicEvaluatorWithMonads.eval (answer).a shouldBe 42 }
   it should "return 42 for a constant " in {
     BasicEvaluatorWithMonads.eval (const).a shouldBe 42 }
 
   it should "throw an exception" in
-    { intercept[java.lang.ArithmeticException]
-      { BasicEvaluatorWithMonads.eval (error) } }
+  { intercept[java.lang.ArithmeticException]
+  { BasicEvaluatorWithMonads.eval (error) } }
 
   it should "crash on unsafe terms" in check {
     forAll (genUnsafeTerm) ( (t: Term) => {
       intercept[java.lang.ArithmeticException] {
-        BasicEvaluatorWithMonads.eval (t).a}; true }
+      BasicEvaluatorWithMonads.eval (t).a}; true }
     )
   }
 
@@ -160,9 +158,9 @@ class  TermSpec extends FlatSpec with Checkers {
   }
 
   def toBasic (m: ExceptionEvaluatorWithMonads.M[Int])
-  : ExceptionEvaluator.M[Int] =  m match {
-    case ExceptionEvaluatorWithMonads.Raise (s) => ExceptionEvaluator.Raise(s)
-    case ExceptionEvaluatorWithMonads.Return (a) => ExceptionEvaluator.Return(a)
+    : ExceptionEvaluator.M[Int] =  m match {
+      case ExceptionEvaluatorWithMonads.Raise (s) => ExceptionEvaluator.Raise(s)
+      case ExceptionEvaluatorWithMonads.Return (a) => ExceptionEvaluator.Return(a)
   }
 
 
@@ -193,17 +191,17 @@ class  TermSpec extends FlatSpec with Checkers {
       StateEvaluatorWithMonads.eval (const).step (n) == (42,n) } }
 
   it should "throw a scala exception on division by 0" in
-    { intercept[java.lang.ArithmeticException] {
-      StateEvaluatorWithMonads.eval (error).step (0) } }
+  { intercept[java.lang.ArithmeticException] {
+  StateEvaluatorWithMonads.eval (error).step (0) } }
 
   behavior of "State evaluators"
 
   it should "behave identically (safe)" in check {
     forAll (genSafeTerm) ( (t: Term) =>
-      forAll { (n: Int) =>
-        StateEvaluator.eval (t).step(n) ==
-          StateEvaluatorWithMonads.eval(t).step (n)
-      })
+        forAll { (n: Int) =>
+      StateEvaluator.eval (t).step(n) ==
+        StateEvaluatorWithMonads.eval(t).step (n)
+     })
   }
 
 
@@ -219,17 +217,17 @@ class  TermSpec extends FlatSpec with Checkers {
   it should "return simple result for a constant" in {
     val r = OutputEvaluatorWithMonads.eval(const)
     r.a shouldBe 42
-    r.o shouldBe "eval(Con(42)) <= 42\n"
+    r.o shouldBe "eval(Cons(42)) <= 42\n"
   }
   it should "throw a scala exception on division by 0" in
-    { intercept[java.lang.ArithmeticException] {
-      OutputEvaluatorWithMonads.eval (error) } }
+  { intercept[java.lang.ArithmeticException] {
+    OutputEvaluatorWithMonads.eval (error) } }
 
 
   behavior of "Output evaluators"
 
   private def repackage (r :OutputEvaluatorWithMonads.M[Int])
-  : OutputEvaluator.M[Int] =
+      : OutputEvaluator.M[Int] =
     r match { case OutputEvaluatorWithMonads.M(o,a) => OutputEvaluator.M(o,a) }
 
   it should "behave identically (safe)" in check {
@@ -239,7 +237,7 @@ class  TermSpec extends FlatSpec with Checkers {
   }
 
 
-  // AW TODO: look into monadic tests in Wadler's paper (Section 3)
-  // AW TODO: refactor for DRY
+  // TODO: look into monadic tests in Wadler's paper (Section 3)
+  // TODO: refactor for DRY
 
 }
